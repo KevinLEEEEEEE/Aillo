@@ -5,6 +5,10 @@ const SUPPORTEDFORMAT = ['png', 'jpeg', 'bmp'];
 
 const imageManager = {
   isSupportedFile(file) {
+    if (!file) {
+      return false;
+    }
+
     const { type } = file;
     const [fileType = 'unknown', format = 'png'] = type.split('/');
 

@@ -28,8 +28,6 @@ const imageDAC = {
   },
 
   validateAndDisplay(file) {
-    this.state = STATE.wait;
-
     if (!imageManager.isSupportedFile(file)) {
       logger.error('Please upload an image in supported format.');
       return;
@@ -49,8 +47,6 @@ const imageDAC = {
         this.imgBox.setAttribute('width', value.width);
         this.imgBox.setAttribute('height', value.height);
         this.imgBox.setAttribute('src', objectURL);
-
-        this.convertImage('jpeg');
       });
   },
 
@@ -125,7 +121,7 @@ const imageDAC = {
 
     this.nameInput.value = formatedName;
 
-    this.downloadBtn.setAttribute('download', name);
+    this.downloadBtn.setAttribute('download', formatedName);
 
     logger.info(`init file name to: ${formatedName}`);
   },
@@ -209,13 +205,11 @@ export default function imageDisplayAndConvert() {
   });
 
   formatSelection.addEventListener('change', () => {
-    if (imageDAC.state === STATE.wait) {
-      return;
-    }
-
     const selectedFormat = formatSelection[formatSelection.selectedIndex].value;
 
-    imageDAC.convertImage(selectedFormat);
+    if (selectedFormat !== 'none') {
+      imageDAC.convertImage(selectedFormat);
+    }
   });
 
   rename.addEventListener('change', () => {

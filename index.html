@@ -11,18 +11,18 @@
       <div id="imageDisplayAndConvert">
         <div class="fileBox">
             <label id="inputBox" class="inputBox"><input type="file"></label>
-            <div class="inputMessage">
+            <div id="inputHelper">
                 <p>+</p>
                 <p>点击或拖动文件至此</p>
             </div>
-            <div class="imgContainer"><img id="imgBox"></div>
+            <div id="imgContainer"><img id="imgBox"></div>
         </div> 
         <div class="downloadBox">
-          <div class="rename">
+          <div class="rename options">
             <span>名称：</span>
-            <input type="text" name="rname" id="rename">
+            <input type="text" name="rename" id="rename">
           </div>
-          <div class="formatSelection">
+          <div class="formatSelection options">
             <span>格式选择：</span>
             <select name="format" id="formatSelection">
               <option value="jpeg">jpeg</option>
@@ -30,7 +30,7 @@
               <option value="bmp">bmp</option>
             </select>
           </div>
-          <a id="download" download="convertedImage" href="#">download</a>
+          <a id="download" class="options disable" download="#" href="#">download</a>
         </div>
       </div>
 

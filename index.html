@@ -8,12 +8,32 @@
   </head>
   <body>
     <div id="exp1" class="exp">
-      <div id="fileBox">
+      <div id="imageDisplayAndConvert">
+        <div class="fileBox">
+            <label id="inputBox" class="inputBox"><input type="file"></label>
+            <div class="inputMessage">
+                <p>+</p>
+                <p>点击或拖动文件至此</p>
+            </div>
+            <div class="imgContainer"><img id="imgBox"></div>
+        </div> 
+        <div class="downloadBox">
+          <div class="rename">
+            <span>名称：</span>
+            <input type="text" name="rname" id="rename">
+          </div>
+          <div class="formatSelection">
+            <span>格式选择：</span>
+            <select name="format" id="formatSelection">
+              <option value="jpeg">jpeg</option>
+              <option value="png">png</option>
+              <option value="bmp">bmp</option>
+            </select>
+          </div>
+          <a id="download" download="convertedImage" href="#">download</a>
+        </div>
+      </div>
 
-      </div> 
-      <label><input type="file"></label>
-      <div id="imgContainer"><img id="imgBox"></div>
-      <a id="download" download="convertedImage" href="#">download</a>
     </div>
   </body>
 </html>

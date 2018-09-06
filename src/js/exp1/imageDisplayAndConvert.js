@@ -1,7 +1,7 @@
 import imageManager from './api/imageManager';
 import logger from '../utils/logger';
 
-const fileIAD = {
+const imageDAC = {
   init() {
     this.imgBox = document.getElementById('imgBox'); // the <img> tag
     this.imgContainer = document.getElementById('imgContainer'); // div that contains the <img>
@@ -24,7 +24,7 @@ const fileIAD = {
         this.imgBox.setAttribute('height', value.height);
         this.imgBox.setAttribute('src', objectURL);
 
-        fileIAD.convertAndSave('bmp');
+        imageDAC.convertAndSave('bmp');
       });
   },
 
@@ -83,12 +83,12 @@ const fileIAD = {
   },
 };
 
-export default function fileInputAndDisplay() {
+export default function imageDisplayAndConvert() {
   const exp1 = document.getElementById('exp1');
-  const fileBox = document.getElementById('fileBox');
+  const inputBox = document.getElementById('inputBox');
   const imgInput = exp1.getElementsByTagName('input')[0];
 
-  fileIAD.init();
+  imageDAC.init();
 
   imgInput.addEventListener('change', (e) => {
     e.stopPropagation();
@@ -98,15 +98,15 @@ export default function fileInputAndDisplay() {
 
     logger.info('file changed by selecting.');
 
-    fileIAD.validateAndDisplay(files[0]);
+    imageDAC.validateAndDisplay(files[0]);
   });
 
-  fileBox.addEventListener('dragover', (e) => {
+  inputBox.addEventListener('dragover', (e) => {
     e.stopPropagation();
     e.preventDefault();
   });
 
-  fileBox.addEventListener('drop', (e) => {
+  inputBox.addEventListener('drop', (e) => {
     e.stopPropagation();
     e.preventDefault();
 
@@ -114,6 +114,6 @@ export default function fileInputAndDisplay() {
 
     logger.info('file changed by dragging.');
 
-    fileIAD.validateAndDisplay(file);
+    imageDAC.validateAndDisplay(file);
   });
 }

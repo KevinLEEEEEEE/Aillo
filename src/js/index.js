@@ -1,5 +1,5 @@
-import '../css/style.css';
+import '../css/fileInputAndDisplay.css';
 
-import fileInputAndDisplay from './exp1/fileInputAndDisplay';
+import imageDisplayAndConvert from './exp1/imageDisplayAndConvert';
 
-fileInputAndDisplay();
+imageDisplayAndConvert();

@@ -82,6 +82,11 @@
   opacity: 0;
 }
 
+.annotation {
+  transform: scale(.8) translateX(-10%);
+  color: rgba(0, 0, 0, 0.5);
+}
+
 #rename {
   outline: none;
   border: none;

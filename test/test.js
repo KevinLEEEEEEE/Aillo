@@ -4,17 +4,19 @@ const assert = require('assert');
 describe('imageDisplayAndConvert', () => {
   describe('imageDisplay', () => {
     it('unsupported format should be rejected', () => {
-      const nightmare = Nightmare();
+      const nightmare = Nightmare({ show: true });
 
       nightmare
-        .goto('../dist/index.html')
+        .goto('http://localhost:8080/')
         .type('#rename', 'testName')
-        // .evaluate(() => document.getElementById('rename').value)
+        .evaluate(() => document.getElementById('rename').value)
+        .end()
         .then((value) => {
-          // console.log(document.getElementById('rename').value);
-          // assert.equal(value, 'testName');
+          assert.equal(value, 'testName');
+        })
+        .catch((error) => {
+          console.error('Search failed:', error);
         });
-      // assert.equal([1, 2, 3].indexOf(4), -1);
     });
   });
 });

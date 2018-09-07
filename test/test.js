@@ -3,7 +3,7 @@ const assert = require('assert');
 
 describe('imageDisplayAndConvert', () => {
   describe('imageDisplay', () => {
-    it('unsupported format should be rejected', () => {
+    it('unable to click when started', () => {
       const nightmare = Nightmare({ show: true });
 
       nightmare

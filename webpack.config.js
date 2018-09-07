@@ -16,11 +16,19 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(['dist']),
     new HtmlWebpackPlugin({
-      title: 'Assignment',
-      template: './index.html',
+      filename: 'index.html',
+      title: 'mainPage',
+      template: './src/html/index.html',
       minify: true,
       inject: 'body',
     }),
+    // new HtmlWebpackPlugin({
+    //   filename: 'test.html',
+    //   title: 'Assignment',
+    //   template: './src/html/test.html',
+    //   minify: true,
+    //   inject: false,
+    // }),
     new webpack.HotModuleReplacementPlugin(),
   ],
   output: {

@@ -21,6 +21,8 @@
     "document": true,
     "FileReader": true,
     "window": true,
-    "Image": true
+    "Image": true,
+    "describe": true,
+    "it": true
 	}
 }

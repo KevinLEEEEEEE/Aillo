@@ -1,5 +1,4 @@
 
-
 const matrixManager = {
   oneDimensionToTwo(array, width, height) {
     const tmpArray = [];
@@ -12,6 +11,13 @@ const matrixManager = {
     }
 
     return tmpArray;
+  },
+
+  convertArrayToPlural(array) {
+    if (typeof array[0] === 'object') {
+      return array;
+    }
+    return array.map(value => ({ real: value, imag: 0 }));
   },
 };
 

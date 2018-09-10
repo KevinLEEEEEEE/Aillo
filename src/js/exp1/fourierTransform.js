@@ -1,6 +1,7 @@
 import imageManager from './api/imageManager';
 import matrixManager from './api/matrixManager';
 import fft2 from './api/fft2';
+import fft from './api/fft';
 
 const _fourier = {
   log2X(x) {
@@ -77,6 +78,11 @@ export default function _fourierransform() {
 
     // console.log(twoDimensionArray);
 
-    fft2(twoDimensionArray);
+    // fft2(twoDimensionArray, completeWidth, completeHeight);
+    const tmp = [
+      [0, 1, 2, 3],
+      [0, 1, 2, 3],
+    ];
+    fft2(tmp, 4, 2);
   });
 }

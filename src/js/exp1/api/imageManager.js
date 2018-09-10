@@ -60,6 +60,10 @@ const imageManager = {
     return canvas.toDataURL(completeFormat);
   },
 
+  convertCanvasToImageData(canvas, x, y, width, height) {
+    return canvas.getContext('2d').getImageData(x, y, width, height);
+  },
+
   createObjectURL(file) {
     return window.URL.createObjectURL(file);
   },

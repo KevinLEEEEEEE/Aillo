@@ -33,27 +33,30 @@ const _fourier = {
     return tmpArray;
   },
 
-  completeArray(array, completewidth, completeheight) {
+  cArray(array, cwidth, cheight) {
     const { length } = array;
 
     for (let i = 0; i < length; i += 1) {
       const row = array[i];
       const rowLength = row.length;
-      const disparityW = completewidth - rowLength;
+      const disparityW = cwidth - rowLength;
 
       for (let j = 0; j < disparityW; j += 1) {
         row[j + rowLength] = 0;
       }
     }
 
-    const disparityH = completeheight - length;
-
+    const disparityH = cheight - length;
+    console.log(disparityH);
     for (let i = 0; i < disparityH; i += 1) {
       array[i + length] = [];
-      for (let j = 0; j < completewidth; j += 1) {
+      for (let j = 0; j < cwidth; j += 1) {
         array[i + length][j] = 0;
+        console.log('hi');
       }
     }
+
+    return array;
   },
 };
 
@@ -71,18 +74,22 @@ export default function _fourierransform() {
     const comporessedArray = _fourier.compressImageData(imageData);
     const twoDimensionArray = matrixManager.oneDimensionToTwo(comporessedArray, width, height);
 
-    const completeWidth = 1 << Math.ceil(_fourier.log2X(width));
-    const completeHeight = 1 << Math.ceil(_fourier.log2X(height));
+    const cWidth = 1 << Math.ceil(_fourier.log2X(width));
+    const cHeight = 1 << Math.ceil(_fourier.log2X(height));
 
-    _fourier.completeArray(twoDimensionArray, completeWidth, completeHeight);
+    const completeArray = _fourier.cArray(twoDimensionArray, cWidth, cHeight);
 
-    // console.log(twoDimensionArray);
+    const fftedArray = fft2(completeArray, cWidth, cHeight);
 
-    // fft2(twoDimensionArray, completeWidth, completeHeight);
-    const tmp = [
-      [0, 1, 2, 3],
-      [0, 1, 2, 3],
-    ];
-    fft2(tmp, 4, 2);
+    // const tmp = [
+    //   [0, 1, 2, 3],
+    //   [0, 1, 2, 3],
+    // ];
+
+    // const fftedArray = fft2(tmp, 4, 2);
+
+    const flattedArray = matrixManager.twoDimensionsToOne(fftedArray, cWidth, cHeight);
+
+    const spectrum = matrixManager.convertPluralToArray(flattedArray);
   });
 }

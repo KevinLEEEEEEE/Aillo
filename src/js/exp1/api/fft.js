@@ -82,10 +82,10 @@ export default function fft(array) {
   let top;
   let bottom;
 
-  for (let i = 0; i < log2X; i += 1) {
+  for (let i = 0; i < log2X; i += 1) { // 枚举到哪一层
     l = 1 << i;
-    for (let j = 0; j < length; j += 2 * l) {
-      for (let k = 0; k < l; k += 1) {
+    for (let j = 0; j < length; j += 2 * l) { // 枚举合并区间
+      for (let k = 0; k < l; k += 1) { // 枚举下标
         xW = _fft.mul(array[j + k + l], factor[length / (2 * l) * k]);
         top = _fft.add(array[j + k], xW);
         bottom = _fft.sub(array[j + k], xW);
@@ -94,8 +94,6 @@ export default function fft(array) {
       }
     }
   }
-
-  console.log(array);
 
   return array;
 }

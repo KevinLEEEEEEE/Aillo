@@ -13,11 +13,36 @@ const matrixManager = {
     return tmpArray;
   },
 
-  convertArrayToPlural(array) {
-    if (typeof array[0] === 'object') {
-      return array;
+  twoDimensionsToOne(array, width, height) {
+    const tmp = [];
+
+    for (let i = 0; i < height; i += 1) {
+      for (let j = 0; j < width; j += 1) {
+        tmp.push(array[i][j]);
+      }
     }
-    return array.map(value => ({ real: value, imag: 0 }));
+
+    return tmp;
+  },
+
+  convertArrayToPlural(array) {
+    return array.map((value) => {
+      if (typeof value === 'object') {
+        return value;
+      }
+
+      return { real: value, imag: 0 };
+    });
+  },
+
+  convertPluralToArray(array) {
+    return array.map((value) => {
+      if (typeof value === 'number') {
+        return value;
+      }
+
+      return value.real;
+    });
   },
 };
 

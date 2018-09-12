@@ -35,6 +35,19 @@ const _fourier = {
     return tmpArray;
   },
 
+  // unCompressArray(array) {
+  //   const uncompress = [];
+
+  //   array.forEach((element) => {
+  //     uncompress.push(element);
+  //     uncompress.push(element);
+  //     uncompress.push(element);
+  //     uncompress.push('255');
+  //   });
+
+  //   return uncompress;
+  // },
+
   completeArray(array, cwidth, cheight) {
     const { length } = array;
 
@@ -83,15 +96,6 @@ export default function _fourierransform() {
 
     const fftedArray = fft2(completeArray, cWidth, cHeight);
 
-    // const tmp = [
-    //   [0, 1, 2, 3],
-    //   [0, 4, 2, 8],
-    //   [1, 3, 2, 9],
-    //   [5, 1, 3, 3],
-    // ];
-
-    // const fftedArray = fft2(tmp, 4, 4);
-
     logger.debug('fftedArray: ');
     console.log(fftedArray);
 
@@ -102,6 +106,22 @@ export default function _fourierransform() {
 
     const spectrum = matrixManager.convertPluralToArray(flattedArray);
 
+    logger.debug('oneDimensionArray');
     console.log(spectrum);
+
+    const zoomedArray = matrixManager.zoom(spectrum, 255);
+
+    logger.debug('zoomedArray');
+    console.log(zoomedArray);
+
+    // const uncompressArray = _fourier.unCompressArray(zoomedArray);
+    // const Uint8ClampedArray = matrixManager.convertArrayToUint8ClampedArray(uncompressArray);
+    // const newImageData = imageManager.createImageData(Uint8ClampedArray, prop, cWidth, cHeight);
+
+    const newCanvas = imageManager.convertArrayToCanvas(zoomedArray, cWidth, cHeight);
+
+    const base64 = imageManager.convertCanvasToBase64(newCanvas, 'png');
+
+    imgBox.setAttribute('src', base64);
   });
 }

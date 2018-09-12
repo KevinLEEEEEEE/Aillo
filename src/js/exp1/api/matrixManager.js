@@ -41,9 +41,25 @@ const matrixManager = {
         return value;
       }
 
-      return value.real;
+      return Math.sqrt((value.real ** 2) + (value.imag ** 2));
     });
   },
+
+  zoom(array, max) {
+    let biggest = 0;
+
+    array.forEach((element) => {
+      if (element > biggest && element < 10000) {
+        biggest = element;
+      }
+    });
+
+    return array.map(value => value / biggest * max);
+  },
+
+  // convertArrayToUint8ClampedArray(array) {
+  //   return new Uint8ClampedArray(array);
+  // },
 };
 
 export default matrixManager;

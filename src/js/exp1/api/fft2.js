@@ -14,12 +14,10 @@ export default function fft2(array, width, height) {
 
     tmp = fft(tmp);
 
-    for (let j = 0; j < height; j += 1) {
+    for (let j = 0; j < tmp.length; j += 1) {
       array[j][i] = tmp[j];
     }
   }
-
-  // const test1 = [0, 1, 2, 3, 4, 5, 6, 7];
 
   // const test2 = [1, 3, 2, 5, 8, 4, 1, 3,
   //   2, 5, 8, 4, 1, 3, 2, 5,

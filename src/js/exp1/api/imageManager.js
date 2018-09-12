@@ -64,6 +64,28 @@ const imageManager = {
     return canvas.getContext('2d').getImageData(x, y, width, height);
   },
 
+  convertArrayToCanvas(array, width, height) {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.setAttribute('width', width);
+    canvas.setAttribute('height', height);
+
+    for (let i = 0; i < height; i += 1) {
+      for (let j = 0; j < width; j += 1) {
+        const pos = i * width + j;
+
+        ctx.fillStyle = `rgb(${array[pos]
+        },${array[pos]
+        },${array[pos]})`;
+
+        ctx.fillRect(j, i, 1, 1);
+      }
+    }
+
+    return canvas;
+  },
+
   createObjectURL(file) {
     return window.URL.createObjectURL(file);
   },

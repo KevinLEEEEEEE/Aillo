@@ -1,7 +1,9 @@
 import imageManager from './api/imageManager';
 import matrixManager from './api/matrixManager';
 import fft2 from './api/fft2';
+import fft from './api/fft';
 import logger from '../utils/logger';
+import ffts from './api/myFFT/fft';
 
 const _fourier = {
   log2X(x) {
@@ -71,6 +73,15 @@ const _fourier = {
 export default function _fourierransform() {
   const fourier = document.getElementById('fourier');
   const imgBox = document.getElementById('imgBox');
+
+  const arr = ffts.fft([0, 1, 2, 3, 4, 5, 6, 7]);
+  console.log(arr);
+  const arrr = ffts.ifft(arr);
+
+  arrr.forEach((value) => {
+    console.log(value);
+  });
+  // console.log(fft([0, 1, 2, 3, 4, 5, 6, 7]));
 
   fourier.addEventListener('click', () => {
     const tmpCanvas = imageManager.convertImageToCanvas(imgBox);

@@ -36,20 +36,22 @@ const matrixManager = {
   },
 
   convertPluralToArray(array) {
-    return array.map((value) => {
-      if (typeof value === 'number') {
-        return value;
-      }
+    // return array.map((value) => {
+    //   if (typeof value === 'number') {
+    //     return value;
+    //   }
 
-      return Math.sqrt((value.real ** 2) + (value.imag ** 2));
-    });
+    //   return Math.sqrt((value.real ** 2) + (value.imag ** 2));
+    // });
+
+    return array.map(value => value.magnitude2());
   },
 
   zoom(array, max) {
     let biggest = 0;
 
     array.forEach((element) => {
-      if (element > biggest && element < 10000) {
+      if (element > biggest) {
         biggest = element;
       }
     });

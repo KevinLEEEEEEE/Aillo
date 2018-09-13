@@ -25,7 +25,7 @@ const complex = (real, imag) => {
     },
 
     magnitude2() {
-      return Math.sqrt(this.magnitude2());
+      return Math.sqrt(this.magnitude());
     },
 
     conjugate() {
@@ -93,7 +93,11 @@ const _ = {
     const tmp = [];
 
     for (let i = 0; i < length; i += 1) {
-      tmp.push(complex(array[i], 0));
+      if (typeof array[i] === 'object') {
+        tmp.push(array[i]);
+      } else {
+        tmp.push(complex(array[i], 0));
+      }
     }
 
     for (let i = length; i < len; i += 1) {

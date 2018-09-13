@@ -31,6 +31,10 @@ const complex = (real, imag) => {
     conjugate() {
       return complex(this.real, -this.imag);
     },
+
+    regress(a) {
+      return this.real / a;
+    },
   });
 
   comp.real = real;
@@ -146,12 +150,7 @@ const ifft = (array) => {
   const fftedArray = _.butterfly(conjugatedArray);
   conjugatedArray = fftedArray.map(value => value.conjugate());
 
-  const { length } = array;
-  return conjugatedArray.map((value) => {
-    const val = value.mul(1 / length);
-
-    return val.real;
-  });
+  return conjugatedArray;
 };
 
 export default {

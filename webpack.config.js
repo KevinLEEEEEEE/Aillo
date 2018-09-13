@@ -22,13 +22,6 @@ module.exports = {
       minify: true,
       inject: 'body',
     }),
-    // new HtmlWebpackPlugin({
-    //   filename: 'test.html',
-    //   title: 'Assignment',
-    //   template: './src/html/test.html',
-    //   minify: true,
-    //   inject: false,
-    // }),
     new webpack.HotModuleReplacementPlugin(),
   ],
   output: {
@@ -65,6 +58,10 @@ module.exports = {
         use: [
           'file-loader',
         ],
+      },
+      {
+        test: /\.worker\.js$/,
+        use: { loader: 'worker-loader' },
       },
     ],
   },

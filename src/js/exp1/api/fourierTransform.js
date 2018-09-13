@@ -1,10 +1,9 @@
-import imageManager from './api/imageManager';
-import matrixManager from './api/matrixManager';
-import fft2 from './api/fft2';
-import fft from './api/fft';
-import logger from '../utils/logger';
-import ffts from './api/myFFT/fft';
-import fft2s from './api/myFFT/fft2';
+import imageManager from './imageManager';
+import matrixManager from './matrixManager';
+// import fft2 from './api/fft2';
+// import fft from './api/fft';
+import logger from '../../utils/logger';
+import fft2s from './myFFT/fft2';
 
 const _fourier = {
   log2X(x) {
@@ -79,19 +78,23 @@ export default function _fourierransform() {
   // console.log(i);
 
   fourier.addEventListener('click', () => {
-    const tmpCanvas = imageManager.convertImageToCanvas(imgBox);
-    const { width, height } = tmpCanvas;
-    const imageData = imageManager.convertCanvasToImageData(tmpCanvas, 0, 0, width, height);
+    // const tmpCanvas = imageManager.convertImageToCanvas(imgBox);
+    // const { width, height } = tmpCanvas;
+    // const imageData = imageManager.convertCanvasToImageData(tmpCanvas, 0, 0, width, height);
 
-    logger.debug(`imageData:  width: ${width}px, height: ${height}px`);
-    console.log(imageData);
+    // logger.debug(`imageData:  width: ${width}px, height: ${height}px`);
+    // console.log(imageData);
 
-    const decoloredImageData = _fourier.decolorization(imageData);
-    const compressedArray = _fourier.compressImageData(decoloredImageData);
-    // const twoDimensionArray = matrixManager.oneDimensionToTwo(compressedArray, width, height);
+    // const decoloredImageData = _fourier.decolorization(imageData);
+    // const compressedArray = _fourier.compressImageData(decoloredImageData);
+    // // const twoDimensionArray = matrixManager.oneDimensionToTwo(compressedArray, width, height);
 
-    logger.debug('compressedArray: ');
-    console.log(compressedArray);
+    // logger.debug('compressedArray: ');
+    // console.log(compressedArray);
+
+    const compressedArray = [0, 1, 2, 3, 4, 5, 6, 7];
+    const width = 4;
+    const height = 2;
 
     const fft2Array = fft2s.fft2(compressedArray, width, height);
 
@@ -101,8 +104,8 @@ export default function _fourierransform() {
     // logger.debug(`twoDimensionArray  width: ${twoDimensionArray[0].length},  height: ${twoDimensionArray.length}`);
     // console.log(twoDimensionArray);
 
-    const cWidth = 1 << Math.ceil(_fourier.log2X(width));
-    const cHeight = 1 << Math.ceil(_fourier.log2X(height));
+    // const cWidth = 1 << Math.ceil(_fourier.log2X(width));
+    // const cHeight = 1 << Math.ceil(_fourier.log2X(height));
     // const completeArray = _fourier.completeArray(twoDimensionArray, cWidth, cHeight);
 
     // logger.debug(`completed  width: ${completeArray[0].length},  height: ${completeArray.length}`);
@@ -119,24 +122,30 @@ export default function _fourierransform() {
     // console.log(flattedArray);
 
 
-    const spectrum = matrixManager.convertPluralToArray(fft2Array);
+    // const spectrum = matrixManager.convertPluralToArray(fft2Array);
 
-    logger.debug('oneDimensionArray');
-    console.log(spectrum);
+    // logger.debug('oneDimensionArray');
+    // console.log(spectrum);
 
-    const zoomedArray = matrixManager.zoom(spectrum, 255);
+    // const zoomedArray = matrixManager.zoom(spectrum, 255);
 
-    logger.debug('zoomedArray');
-    console.log(zoomedArray);
+    // logger.debug('zoomedArray');
+    // console.log(zoomedArray);
 
     // const uncompressArray = _fourier.unCompressArray(zoomedArray);
     // const Uint8ClampedArray = matrixManager.convertArrayToUint8ClampedArray(uncompressArray);
     // const newImageData = imageManager.createImageData(Uint8ClampedArray, prop, cWidth, cHeight);
 
-    const newCanvas = imageManager.convertArrayToCanvas(zoomedArray, cWidth, cHeight);
+    // const newCanvas = imageManager.convertArrayToCanvas(zoomedArray, cWidth, cHeight);
 
-    const base64 = imageManager.convertCanvasToBase64(newCanvas, 'png');
+    // const base64 = imageManager.convertCanvasToBase64(newCanvas, 'png');
 
-    imgBox.setAttribute('src', base64);
+    // imgBox.setAttribute('src', base64);
+
+    const test = fft2s.ifft2(fft2Array, width, height);
+
+    const test2 = test.map(value => value.regress(width * height));
+
+    console.log(test2);
   });
 }

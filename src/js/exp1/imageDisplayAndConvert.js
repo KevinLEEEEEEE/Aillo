@@ -112,8 +112,6 @@ const imageDAC = {
 
   hideHelper() {
     this.inputHelper.classList.add('hide');
-
-    logger.info('hide upload helper');
   },
 
   setName(name) {
@@ -147,15 +145,11 @@ const imageDAC = {
   canDownload() {
     this.downloadBtn.classList.remove('disable');
     this.downloadBtn.classList.add('enable');
-
-    logger.info('download button abled');
   },
 
   cannotDownload() {
     this.downloadBtn.classList.remove('enable');
     this.downloadBtn.classList.add('disable');
-
-    logger.info('download button disabled');
   },
 };
 

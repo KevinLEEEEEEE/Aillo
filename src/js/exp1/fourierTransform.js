@@ -1,15 +1,8 @@
 import imageManager from './api/imageManager';
-import matrixManager from './api/matrixManager';
-// import fft2 from './api/fft2';
-// import fft from './api/fft';
 import logger from '../utils/logger';
 import fft2s from './api/myFFT/fft2';
 
 const _fourier = {
-  log2X(x) {
-    return Math.log(x) / Math.log(2);
-  },
-
   decolorization(imageData) {
     const { data } = imageData;
     const { length } = data;
@@ -37,95 +30,108 @@ const _fourier = {
     return tmpArray;
   },
 
-  // unCompressArray(array) {
-  //   const uncompress = [];
+  zoom(array, limit) {
+    const cc = 9e-3;
+    const max = Math.max(...array);
+    const limitedMax = Math.log(max * cc + 1);
 
-  //   array.forEach((element) => {
-  //     uncompress.push(element);
-  //     uncompress.push(element);
-  //     uncompress.push(element);
-  //     uncompress.push('255');
-  //   });
+    return array.map((value) => {
+      const color = Math.log(cc * value + 1);
 
-  //   return uncompress;
-  // },
+      return Math.round(color * limit / limitedMax);
+    });
+  },
 
-  completeArray(array, cwidth, cheight) {
-    const { length } = array;
-
-    for (let i = 0; i < length; i += 1) {
-      for (let j = array[i].length; j < cwidth; j += 1) {
-        array[i][j] = 0;
-      }
-    }
-
-    for (let i = length; i < cheight; i += 1) {
-      array[i] = [];
-      for (let j = 0; j < cwidth; j += 1) {
-        array[i][j] = 0;
-      }
-    }
-
-    return array;
+  convertPluralToArray(array) {
+    return array.map(value => value.magnitude2());
   },
 };
 
 export default function _fourierransform() {
-  const fourier = document.getElementById('fourier');
+  const fft = document.getElementById('fft');
+  const ifft = document.getElementById('ifft');
   const imgBox = document.getElementById('imgBox');
+  let storage = null;
 
-  fourier.addEventListener('click', () => {
-    // const tmpCanvas = imageManager.convertImageToCanvas(imgBox);
-    // const { width, height } = tmpCanvas;
-    // const imageData = imageManager.convertCanvasToImageData(tmpCanvas, 0, 0, width, height);
+  fft.addEventListener('click', () => {
+    if (storage !== null) {
+      alert('you cannot fun fft twice!');
+      return;
+    }
 
-    // logger.debug(`imageData:  width: ${width}px, height: ${height}px`);
-    // console.log(imageData);
+    logger.info('', '------- Start running fft2 -------');
 
-    // const decoloredImageData = _fourier.decolorization(imageData);
-    // const compressedArray = _fourier.compressImageData(decoloredImageData);
+    const tmpCanvas = imageManager.convertImageToCanvas(imgBox);
+    const { width, height } = tmpCanvas;
+    const imageData = imageManager.convertCanvasToImageData(tmpCanvas, 0, 0, width, height);
 
-    // logger.debug('compressedArray: ');
-    // console.log(compressedArray);
+    logger.info('get imageData from DOM [√]');
+    // logger.debug(imageData);
 
-    const compressedArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-    const width = 4;
-    const height = 3;
+    const decoloredImageData = _fourier.decolorization(imageData);
+    const compressedArray = _fourier.compressImageData(decoloredImageData);
+
+    logger.info('decolor and compress imageData [√]');
+    // logger.debug(compressedArray);
 
     const fft2Array = fft2s.fft2(compressedArray, width, height);
 
-    logger.debug('fft2Array: ');
-    console.log(fft2Array);
+    logger.info('calculate fft2 [√]');
+    // logger.debug(fft2Array);
 
-    // const spectrum = matrixManager.convertPluralToArray(fft2Array);
+    const spectrum = _fourier.convertPluralToArray(fft2Array);
+    const zoomedArray = _fourier.zoom(spectrum, 255);
 
-    // logger.debug('oneDimensionArray');
-    // console.log(spectrum);
+    logger.info('spectrum and zoom data [√]');
+    // logger.debug(zoomedArray);
 
-    // const zoomedArray = matrixManager.zoom(spectrum, 255);
+    const tffCanvas = imageManager.convertArrayToCanvas(zoomedArray, width, height);
 
-    // logger.debug('zoomedArray');
-    // console.log(zoomedArray);
+    const base64 = imageManager.convertCanvasToBase64(tffCanvas, 'jpeg');
 
-    // const newCanvas = imageManager.convertArrayToCanvas(zoomedArray, width, height);
+    imgBox.setAttribute('src', base64);
 
-    // const base64 = imageManager.convertCanvasToBase64(newCanvas, 'png');
+    logger.info('transform data and update DOM [√]');
 
-    // imgBox.setAttribute('src', base64);
+    storage = {
+      fft: fft2Array,
+      width,
+      height,
+    };
 
-    const test = fft2s.ifft2(fft2Array, width, height);
+    logger.info('update storage and unlock ifft [√]');
 
-    const test2 = fft2s.regress(test, width, height);
+    logger.info('-------- End running fft2 --------', '');
+  });
 
-    console.log(test2);
+  ifft.addEventListener('click', () => {
+    if (storage === null) {
+      alert('please run fft first!');
+      return;
+    }
 
-    // const newCanvas = imageManager.convertArrayToCanvas(test2, cWidth, cHeight);
+    logger.info('', '------- Start running ifft2 -------');
 
-    // // const base64 = imageManager.convertCanvasToBase64(newCanvas, 'png');
+    const { fft: fft2Array, width, height } = storage;
 
-    // // imgBox.setAttribute('src', base64);
+    const ifft2Array = fft2s.ifft2(fft2Array, width, height);
 
+    logger.info('calculate ifft2 [√]');
 
-    // document.getElementById('exp1').appendChild(newCanvas);
+    const regressedArray = fft2s.regress(ifft2Array, width, height);
+
+    const ifftCanvas = imageManager.convertArrayToCanvas(regressedArray, width, height);
+
+    const base64 = imageManager.convertCanvasToBase64(ifftCanvas, 'jpeg');
+
+    imgBox.setAttribute('src', base64);
+
+    logger.info('transform data and update DOM [√]');
+
+    storage = null; // ypdate required
+
+    logger.info('clear storage [√]');
+
+    logger.info('-------- End running ifft2 --------', '');
   });
 }

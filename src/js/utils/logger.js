@@ -1,38 +1,41 @@
 const logger = {
-  paramsExport(title, message, params = undefined) {
-    this.log(title + message);
-    if (params !== undefined) {
-      if (params instanceof Object) {
-        Object.values(params).forEach(param => this.log(param));
-      } else if (params instanceof Array) {
-        params.forEach(param => this.log(param));
-      } else {
-        console.log(params);
-      }
+  paramsExport(title, ...messages) {
+    if (title !== '') {
+      this.log(title);
     }
+
+    messages.forEach((element) => {
+      this.log(element);
+    });
   },
+
   log(message) {
     console.log(message);
   },
 };
 
 export default {
-  fatal(message, ...params) {
-    logger.paramsExport('【FATAL】', message, params);
+  fatal(...messages) {
+    logger.paramsExport('【FATAL】', ...messages);
   },
-  error(message, ...params) {
-    logger.paramsExport('【ERROR】', message, params);
+
+  error(...messages) {
+    logger.paramsExport('【ERROR】', ...messages);
   },
-  warn(message, ...params) {
-    logger.paramsExport('【WARN】', message, params);
+
+  warn(...messages) {
+    logger.paramsExport('【WARN】', ...messages);
   },
-  info(message, ...params) {
-    logger.paramsExport('', message, params);
+
+  info(...messages) {
+    logger.paramsExport('', ...messages);
   },
-  debug(message, ...params) {
-    logger.paramsExport('', message, params);
+
+  debug(...messages) {
+    logger.paramsExport('', ...messages);
   },
-  trace(message, ...params) {
-    logger.paramsExport('', message, params);
+
+  trace(...messages) {
+    logger.paramsExport('', ...messages);
   },
 };

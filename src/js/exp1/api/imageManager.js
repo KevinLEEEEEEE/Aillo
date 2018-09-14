@@ -1,7 +1,7 @@
 import bitMapManager from './bitMapManager';
 import logger from '../../utils/logger';
 
-const SUPPORTEDFORMAT = ['png', 'jpeg', 'bmp'];
+const SUPPORTEDFORMAT = ['png', 'jpeg', 'bmp', 'dib'];
 
 const imageManager = {
   isSupportedFile(file) {
@@ -50,20 +50,6 @@ const imageManager = {
     return canvas;
   },
 
-  convertCanvasToBase64(canvas, format) {
-    const completeFormat = `image/${format}`;
-
-    if (format === 'bmp') {
-      return bitMapManager.convertCanvasToBase64(canvas);
-    }
-
-    return canvas.toDataURL(completeFormat);
-  },
-
-  convertCanvasToImageData(canvas, x, y, width, height) {
-    return canvas.getContext('2d').getImageData(x, y, width, height);
-  },
-
   convertArrayToCanvas(array, width, height) {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
@@ -85,6 +71,21 @@ const imageManager = {
 
     return canvas;
   },
+
+  convertCanvasToBase64(canvas, format) {
+    const completeFormat = `image/${format}`;
+
+    if (format === 'bmp') {
+      return bitMapManager.convertCanvasToBase64(canvas);
+    }
+
+    return canvas.toDataURL(completeFormat);
+  },
+
+  convertCanvasToImageData(canvas, x, y, width, height) {
+    return canvas.getContext('2d').getImageData(x, y, width, height);
+  },
+
 
   createObjectURL(file) {
     return window.URL.createObjectURL(file);

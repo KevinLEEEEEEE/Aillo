@@ -1,23 +1,21 @@
 import ffts from './fft';
 
-const cal = (array, width, height, cw, ch, isReverse) => {
+const cal = (array, w, h, cw, ch, isReverse) => {
   const tmp = [];
 
-  for (let i = 0; i < height; i += 1) {
-    const hFragment = array.slice(i * width, (i + 1) * width);
+  for (let i = 0; i < h; i += 1) {
+    const hFragment = array.slice(i * w, (i + 1) * w);
     const fftedArray = isReverse ? ffts.ifft(hFragment, cw) : ffts.fft(hFragment);
 
     fftedArray.forEach(value => tmp.push(value));
   }
 
-  console.log(tmp);
-
-  const cWidth = tmp.length / height;
+  const cWidth = tmp.length / h;
 
   for (let i = 0; i < cWidth; i += 1) {
     const vFragment = [];
 
-    for (let j = 0; j < height; j += 1) {
+    for (let j = 0; j < h; j += 1) {
       vFragment.push(tmp[j * cWidth + i]);
     }
 
@@ -29,7 +27,7 @@ const cal = (array, width, height, cw, ch, isReverse) => {
     }
   }
 
-  const gap = cw * height - cw * ch;
+  const gap = cw * h - cw * ch;
   if (gap > 0) {
     tmp.splice(cw * ch, gap);
   }

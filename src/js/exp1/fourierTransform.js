@@ -1,9 +1,9 @@
-import imageManager from './imageManager';
-import matrixManager from './matrixManager';
+import imageManager from './api/imageManager';
+import matrixManager from './api/matrixManager';
 // import fft2 from './api/fft2';
 // import fft from './api/fft';
-import logger from '../../utils/logger';
-import fft2s from './myFFT/fft2';
+import logger from '../utils/logger';
+import fft2s from './api/myFFT/fft2';
 
 const _fourier = {
   log2X(x) {
@@ -74,9 +74,6 @@ export default function _fourierransform() {
   const fourier = document.getElementById('fourier');
   const imgBox = document.getElementById('imgBox');
 
-  // const i = fft2s.fft2([0, 1, 2, 3, 4, 5, 6, 7], 4, 2);
-  // console.log(i);
-
   fourier.addEventListener('click', () => {
     // const tmpCanvas = imageManager.convertImageToCanvas(imgBox);
     // const { width, height } = tmpCanvas;
@@ -87,40 +84,18 @@ export default function _fourierransform() {
 
     // const decoloredImageData = _fourier.decolorization(imageData);
     // const compressedArray = _fourier.compressImageData(decoloredImageData);
-    // // const twoDimensionArray = matrixManager.oneDimensionToTwo(compressedArray, width, height);
 
     // logger.debug('compressedArray: ');
     // console.log(compressedArray);
 
-    const compressedArray = [0, 1, 2, 3, 4, 5, 6, 7];
+    const compressedArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
     const width = 4;
-    const height = 2;
+    const height = 3;
 
     const fft2Array = fft2s.fft2(compressedArray, width, height);
 
     logger.debug('fft2Array: ');
     console.log(fft2Array);
-
-    // logger.debug(`twoDimensionArray  width: ${twoDimensionArray[0].length},  height: ${twoDimensionArray.length}`);
-    // console.log(twoDimensionArray);
-
-    // const cWidth = 1 << Math.ceil(_fourier.log2X(width));
-    // const cHeight = 1 << Math.ceil(_fourier.log2X(height));
-    // const completeArray = _fourier.completeArray(twoDimensionArray, cWidth, cHeight);
-
-    // logger.debug(`completed  width: ${completeArray[0].length},  height: ${completeArray.length}`);
-    // console.log(completeArray);
-
-    // const fftedArray = fft2(completeArray, cWidth, cHeight);
-
-    // logger.debug('fftedArray: ');
-    // console.log(fftedArray);
-
-    // const flattedArray = matrixManager.twoDimensionsToOne(fftedArray, cWidth, cHeight);
-
-    // logger.debug('flattedArray: ');
-    // console.log(flattedArray);
-
 
     // const spectrum = matrixManager.convertPluralToArray(fft2Array);
 
@@ -132,11 +107,7 @@ export default function _fourierransform() {
     // logger.debug('zoomedArray');
     // console.log(zoomedArray);
 
-    // const uncompressArray = _fourier.unCompressArray(zoomedArray);
-    // const Uint8ClampedArray = matrixManager.convertArrayToUint8ClampedArray(uncompressArray);
-    // const newImageData = imageManager.createImageData(Uint8ClampedArray, prop, cWidth, cHeight);
-
-    // const newCanvas = imageManager.convertArrayToCanvas(zoomedArray, cWidth, cHeight);
+    // const newCanvas = imageManager.convertArrayToCanvas(zoomedArray, width, height);
 
     // const base64 = imageManager.convertCanvasToBase64(newCanvas, 'png');
 
@@ -144,8 +115,17 @@ export default function _fourierransform() {
 
     const test = fft2s.ifft2(fft2Array, width, height);
 
-    const test2 = test.map(value => value.regress(width * height));
+    const test2 = fft2s.regress(test, width, height);
 
     console.log(test2);
+
+    // const newCanvas = imageManager.convertArrayToCanvas(test2, cWidth, cHeight);
+
+    // // const base64 = imageManager.convertCanvasToBase64(newCanvas, 'png');
+
+    // // imgBox.setAttribute('src', base64);
+
+
+    // document.getElementById('exp1').appendChild(newCanvas);
   });
 }

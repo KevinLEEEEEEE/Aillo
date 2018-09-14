@@ -83,12 +83,9 @@ const _ = {
     return this[`factorLut${len}`];
   },
 
-  log2X(x) {
-    return Math.log(x) / Math.log(2);
-  },
-
   completeLen(len) {
-    return 1 << Math.ceil(_.log2X(len));
+    const log2X = Math.log(len) / Math.log(2);
+    return 1 << Math.ceil(log2X);
   },
 
   formattedArray(array) {
@@ -105,7 +102,7 @@ const _ = {
     }
 
     for (let i = length; i < len; i += 1) {
-      tmp.push(0, 0);
+      tmp.push(complex(0, 0));
     }
 
     return tmp;
@@ -113,7 +110,7 @@ const _ = {
 
   butterfly(formattedArray) {
     const { length } = formattedArray;
-    const log2X = _.log2X(length);
+    const log2X = Math.log(length) / Math.log(2);
     const factorLut = _.factorLut(length);
     const reversedArray = _.reverse(formattedArray);
 
@@ -145,16 +142,17 @@ const fft = (array) => {
   return fftedArray;
 };
 
-const ifft = (array) => {
+const ifft = (array, offset) => {
   let conjugatedArray = array.map(value => value.conjugate());
   const fftedArray = _.butterfly(conjugatedArray);
   conjugatedArray = fftedArray.map(value => value.conjugate());
 
-  return conjugatedArray;
+  return conjugatedArray.slice(0, offset);
 };
 
 export default {
   Complex: complex,
+  completeLen: _.completeLen,
   fft,
   ifft,
 };

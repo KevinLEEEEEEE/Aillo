@@ -42,6 +42,48 @@ const _fourier = {
     });
   },
 
+  displace(array, w, h, matrix, mw, mh) {
+    const blockSize = array.length / (mw * mh);
+    const blockW = w / mw;
+    const blockH = h / mh;
+    const displaceList = [];
+    const tmp = [];
+
+    const position = (p, i) => {
+      const vB = Math.floor(p / mw);
+      const hB = p - vB * mw;
+      const vS = Math.floor(i / blockW);
+      const hS = i - vS * blockW;
+
+      const vBefore = vB * blockH + vS;
+      const hBefore = hB * blockW + hS;
+
+      return vBefore * w + hBefore;
+    };
+
+    matrix.forEach((value, index, arr) => {
+      if (value !== -1 && value !== index) {
+        displaceList.push([index, value]);
+        arr[value] = -1;
+      }
+    });
+
+    displaceList.forEach((value) => {
+      const a1 = value[0];
+      const a2 = value[1];
+
+      for (let i = 0; i < blockSize; i += 1) {
+        const p1 = position(a1, i);
+        const p2 = position(a2, i);
+
+        tmp[p1] = array[p2];
+        tmp[p2] = array[p1];
+      }
+    });
+
+    return tmp;
+  },
+
   convertPluralToArray(array) {
     return array.map(value => value.magnitude2());
   },
@@ -85,7 +127,11 @@ export default function _fourierransform() {
     logger.info('spectrum and zoom data [√]');
     // logger.debug(zoomedArray);
 
-    const tffCanvas = imageManager.convertArrayToCanvas(zoomedArray, width, height);
+    const displacedArray = _fourier.displace(zoomedArray, width, height, [3, 2, 1, 0], 2, 2);
+
+    logger.info('mosaic image to center [√]');
+
+    const tffCanvas = imageManager.convertArrayToCanvas(displacedArray, width, height);
 
     const base64 = imageManager.convertCanvasToBase64(tffCanvas, 'jpeg');
 

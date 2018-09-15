@@ -89,7 +89,7 @@ const _fourier = {
   },
 };
 
-export default function _fourierransform() {
+export default function fourierransform() {
   const fft = document.getElementById('fft');
   const ifft = document.getElementById('ifft');
   const imgBox = document.getElementById('imgBox');

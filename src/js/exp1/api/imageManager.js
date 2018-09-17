@@ -90,6 +90,33 @@ const imageManager = {
   createObjectURL(file) {
     return window.URL.createObjectURL(file);
   },
+
+  decolorization(imageData) {
+    const { data } = imageData;
+    const { length } = data;
+
+    for (let index = 0; index < length; index += 4) {
+      const grayScale = (data[index] + data[index + 1] + data[index + 2]) / 3;
+
+      data[index] = grayScale;
+      data[index + 1] = grayScale;
+      data[index + 2] = grayScale;
+    }
+
+    return imageData;
+  },
+
+  compressImageData(imageData) {
+    const { data } = imageData;
+    const { length } = data;
+    const tmpArray = [];
+
+    for (let index = 0; index < length; index += 4) {
+      tmpArray.push(data[index]);
+    }
+
+    return tmpArray;
+  },
 };
 
 export default imageManager;

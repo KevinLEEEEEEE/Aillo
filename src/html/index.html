@@ -34,9 +34,15 @@
           </div>
           <div class="options">
             <span>傅里叶：</span>
-            <button id="fft">Fourier Transform</button>
-            <button id="ifft">Fourier Inversion</button>
+            <button id="fft">Fast Fourier Transform</button>
+            <button id="ifft">Fast Fourier Inversion</button>
             <p class="annotation">注意：此fft与ifft为阻塞运算，届时浏览器将短时间内无反应</p>
+          </div>
+          <div class="options">
+            <span>离散余弦：</span>
+            <button id="dct">Discrete Cosine Transform</button>
+            <button id="idct">Discrete Cosine Inversion</button>
+            <p class="annotation">注意：此dct与iidct为阻塞运算，届时浏览器将短时间内无反应</p>
           </div>
           <a id="download" class="options disable" download="#" href="#">download</a>
         </div>

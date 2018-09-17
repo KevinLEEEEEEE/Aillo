@@ -3,33 +3,6 @@ import logger from '../utils/logger';
 import fft2s from './api/myFFT/fft2';
 
 const _fourier = {
-  decolorization(imageData) {
-    const { data } = imageData;
-    const { length } = data;
-
-    for (let index = 0; index < length; index += 4) {
-      const grayScale = (data[index] + data[index + 1] + data[index + 2]) / 3;
-
-      data[index] = grayScale;
-      data[index + 1] = grayScale;
-      data[index + 2] = grayScale;
-    }
-
-    return imageData;
-  },
-
-  compressImageData(imageData) {
-    const { data } = imageData;
-    const { length } = data;
-    const tmpArray = [];
-
-    for (let index = 0; index < length; index += 4) {
-      tmpArray.push(data[index]);
-    }
-
-    return tmpArray;
-  },
-
   zoom(array, limit) {
     const cc = 9e-3;
     const max = Math.max(...array);
@@ -110,8 +83,8 @@ export default function fourierransform() {
     logger.info('get imageData from DOM [√]');
     // logger.debug(imageData);
 
-    const decoloredImageData = _fourier.decolorization(imageData);
-    const compressedArray = _fourier.compressImageData(decoloredImageData);
+    const decoloredImageData = imageManager.decolorization(imageData);
+    const compressedArray = imageManager.compressImageData(decoloredImageData);
 
     logger.info('decolor and compress imageData [√]');
     // logger.debug(compressedArray);

@@ -1,30 +1,55 @@
-import dcts from './api/myDCT/dct';
+import imageManager from './api/imageManager';
+import logger from '../utils/logger';
 import dct88s from './api/myDCT/dct88';
 
 export default function discreteCosineTransform() {
-  // dcts.dct([0, 0, 2, 2, 2, 2, 0, 0]);
-  // const i = dcts.dct([42, 66, 68, 66,
-  //   92, 4, 76, 17,
-  //   79, 85, 74, 71,
-  //   96, 93, 39, 3], 4, 4);
+  const dct = document.getElementById('dct');
+  const idct = document.getElementById('idct');
+  const imgBox = document.getElementById('imgBox');
+  let storage = null;
 
+  dct.addEventListener('click', () => {
+    if (storage !== null) {
+      alert('you cannot fun dct twice!');
+    }
 
-  const tmp = [];
-  const tmp1 = [0, 1, 0, 0, 0, 0, 0, 0,
-    2, 3, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0];
+    logger.info('', '------- Start running dct88 -------');
 
-  for (let i = 0; i < 4; i += 1) {
-    tmp.push(i);
-  }
-  dct88s.dct88(tmp, 2, 2);
+    const tmpCanvas = imageManager.convertImageToCanvas(imgBox);
+    const { width, height } = tmpCanvas;
+    const imageData = imageManager.convertCanvasToImageData(tmpCanvas, 0, 0, width, height);
 
-  const r = dcts.dct(tmp1, 8, 8);
+    logger.info('get imageData from DOM [√]');
+    // logger.debug(imageData);
 
-  console.log(r);
+    const decoloredImageData = imageManager.decolorization(imageData);
+    const compressedArray = imageManager.compressImageData(decoloredImageData);
+
+    logger.info('decolor and compress imageData [√]');
+    // logger.debug(compressedArray);
+
+    const dct88Array = dct88s.dct88(compressedArray, width, height);
+
+    logger.info('calculate dct88 [√]');
+
+    const tffCanvas = imageManager.convertArrayToCanvas(dct88Array, width, height);
+
+    const base64 = imageManager.convertCanvasToBase64(tffCanvas, 'jpeg');
+
+    imgBox.setAttribute('src', base64);
+
+    logger.info('transform data and update DOM [√]');
+
+    storage = {
+      dct: dct88Array,
+      width,
+      height,
+    };
+
+    logger.info('update storage and unlock idct [√]');
+
+    logger.info('-------- End running dct88 --------', '');
+  });
+
+  idct.addEventListener('click', () => {});
 }

@@ -2,6 +2,17 @@ import dcts from './dct';
 
 const BLOCKSIZE = 8;
 
+const QUANTITATIVETABLE = [
+  16, 11, 10, 16, 24, 40, 51, 61,
+  12, 12, 14, 19, 26, 58, 60, 55,
+  14, 13, 16, 24, 40, 57, 69, 56,
+  14, 17, 22, 29, 51, 87, 80, 62,
+  18, 22, 37, 56, 68, 109, 103, 77,
+  24, 35, 55, 64, 81, 104, 113, 92,
+  49, 64, 78, 87, 103, 121, 120, 101,
+  72, 92, 95, 98, 112, 100, 103, 99,
+];
+
 const _ = {
   splitArray(array, w, h) {
     const hBlock = Math.ceil(w / BLOCKSIZE);
@@ -55,13 +66,18 @@ const _ = {
 
     return mergedArray;
   },
+
+  quantifyArray(array, scale = 2) {
+    return array.map((value, index) => scale * Math.round(value / QUANTITATIVETABLE[index]));
+  },
 };
 
 const dct88 = (array, w, h) => {
   const splittedArray = _.splitArray(array, w, h);
   const dctedArray = splittedArray.map(val => dcts.dct(val, BLOCKSIZE, BLOCKSIZE));
-  const mergedArray = _.mergeArray(dctedArray, w, h);
-  console.log(mergedArray);
+  const quantifiedArray = dctedArray.map(value => _.quantifyArray(value, 2));
+  const mergedArray = _.mergeArray(quantifiedArray, w, h);
+
   return mergedArray;
 };
 

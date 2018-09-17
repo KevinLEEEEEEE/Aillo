@@ -45,7 +45,7 @@ const _ = {
 const dct = (array, w = array.length, h = 1) => {
   const res = _.cal(array, w, h, false);
 
-  console.log(res);
+  // console.log(res);
 
   return res;
 };
@@ -53,7 +53,7 @@ const dct = (array, w = array.length, h = 1) => {
 const idct = (array, w = array.length, h = 1) => {
   const res = _.cal(array, w, h, true);
 
-  console.log(res);
+  // console.log(res);
 
   return res;
 };
@@ -61,4 +61,5 @@ const idct = (array, w = array.length, h = 1) => {
 export default {
   dct,
   idct,
+  pos: _.pos,
 };

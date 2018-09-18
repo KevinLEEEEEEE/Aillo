@@ -70,11 +70,15 @@ const _ = {
   quantifyArray(array, scale = 2) {
     return array.map((value, index) => scale * Math.round(value / QUANTITATIVETABLE[index]));
   },
+
+  iQuantifyArray(array, scale = 2) {
+    return array.map((value, index) => value * QUANTITATIVETABLE[index] / scale);
+  },
 };
 
 const dct88 = (array, w, h) => {
   const splittedArray = _.splitArray(array, w, h);
-  const dctedArray = splittedArray.map(val => dcts.dct(val, BLOCKSIZE, BLOCKSIZE));
+  const dctedArray = splittedArray.map(value => dcts.dct(value, BLOCKSIZE, BLOCKSIZE));
   const quantifiedArray = dctedArray.map(value => _.quantifyArray(value, 2));
   const mergedArray = _.mergeArray(quantifiedArray, w, h);
 
@@ -82,7 +86,12 @@ const dct88 = (array, w, h) => {
 };
 
 const idct88 = (array, w, h) => {
+  const splittedArray = _.splitArray(array, w, h);
+  const iQuantifiedArray = splittedArray.map(value => _.iQuantifyArray(value, 2));
+  const idctedArray = iQuantifiedArray.map(value => dcts.idct(value, BLOCKSIZE, BLOCKSIZE));
+  const mergedArray = _.mergeArray(idctedArray, w, h);
 
+  return mergedArray;
 };
 
 export default {

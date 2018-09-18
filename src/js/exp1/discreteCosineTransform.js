@@ -51,5 +51,32 @@ export default function discreteCosineTransform() {
     logger.info('-------- End running dct88 --------', '');
   });
 
-  idct.addEventListener('click', () => {});
+  idct.addEventListener('click', () => {
+    if (storage === null) {
+      alert('please run dct first!');
+      return;
+    }
+
+    logger.info('', '------- Start running idct88 -------');
+
+    const { dct: dct88Array, width, height } = storage;
+
+    const idct88Array = dct88s.idct88(dct88Array, width, height);
+
+    logger.info('calculate idct88 [√]');
+
+    const idct88Canvas = imageManager.convertArrayToCanvas(idct88Array, width, height);
+
+    const base64 = imageManager.convertCanvasToBase64(idct88Canvas, 'jpeg');
+
+    imgBox.setAttribute('src', base64);
+
+    logger.info('transform data and update DOM [√]');
+
+    storage = null; // ypdate required
+
+    logger.info('clear storage [√]');
+
+    logger.info('-------- End running idct88 --------', '');
+  });
 }

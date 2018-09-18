@@ -42,7 +42,13 @@
             <span>离散余弦：</span>
             <button id="dct">Discrete Cosine Transform</button>
             <button id="idct">Discrete Cosine Inversion</button>
-            <p class="annotation">注意：此dct与iidct为阻塞运算，届时浏览器将短时间内无反应</p>
+            <p class="annotation">注意：结果已量化，采用缩放值：2 以增强效果，分块大小为8px</p>
+          </div>
+          <div class="options">
+            <span>沃尔什-哈达玛：</span>
+            <button id="wht">Walah Hadamard Transform</button>
+            <button id="iwht">Walah Hadamard Inversion</button>
+            <p class="annotation">注意：结果已量化，采用缩放值：2 以增强效果</p>
           </div>
           <a id="download" class="options disable" download="#" href="#">download</a>
         </div>

@@ -12,6 +12,8 @@ export default function WalahHadamardTrans() {
   const imgBox = document.getElementById('imgBox');
   const storage = null;
 
+  whts.wht();
+
   wht.addEventListener('click', () => {
     if (storage !== null) {
       alert('you cannot fun fft twice!');

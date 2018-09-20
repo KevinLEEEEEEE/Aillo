@@ -58,7 +58,7 @@ const _ = {
     return this[`hadamard${n}`];
   },
 
-  matrixMul(a, aw, ah, b, bw, bh) {
+  matrixMul(a, aw, ah, b, bw) {
     const tmp = [];
 
     for (let i = 0; i < ah; i += 1) {
@@ -85,21 +85,24 @@ const _ = {
 };
 
 const wht = (array) => {
-  // const { length } = array;
-  // const sLength = Math.sqrt(length);
-  // const hadamardArray = _.hadamard(sLength);
+  const { length } = array;
+  const hadamardArray = _.hadamard(length);
+  const mulRes = _.matrixMul(hadamardArray, length, length, array, 1, length);
 
-  // const mul = _.matrixMul(hadamardArray, sLength, sLength, array, 1, length);
-
-  const test = _.matrixMul([2, 1, -1, 1], 4, 1, [2, 2, 1, 3], 1, 4);
-  console.log(test);
+  return mulRes.value.map(value => value / array.length);
 };
 
-const iwht = () => {
+const wht2 = (array) => {
+  const length = Math.sqrt(array.length);
+  const hadamardArray = _.hadamard(length);
+  const mulRes1 = _.matrixMul(hadamardArray, length, length, array, length);
+  const mulRes2 = _.matrixMul(mulRes1.value, mulRes1.width, mulRes1.height, hadamardArray, length);
 
+  return mulRes2.value.map(value => value / array.length);
 };
 
 export default {
   wht,
-  iwht,
+  wht2,
+  pos: _.pos,
 };

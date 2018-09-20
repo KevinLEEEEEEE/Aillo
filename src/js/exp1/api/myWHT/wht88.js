@@ -59,12 +59,8 @@ const _ = {
 
 const wht88 = (array, w, h) => {
   const splittedArray = _.splitArray(array, w, h);
-  const whtedArray = splittedArray.map((value) => {
-    const v = whts.wht2(value);
-    console.log(v);
-
-    return v;
-  });
+  const whtedArray = splittedArray.map(value => whts.wht2(value));
+  console.log(whtedArray);
   const mergedArray = _.mergeArray(whtedArray, w, h);
 
   return mergedArray;

@@ -1,7 +1,4 @@
-const BASICTABLE = [
-  1, 1,
-  1, -1,
-];
+const BASICTABLE = [1, 1, 1, -1];
 
 const HADAMARDTABLE = [
   1, 1, 1, 1, 1, 1, 1, 1,
@@ -27,53 +24,75 @@ const _ = {
   },
 
   hadamard(n) {
-    const hadaFun = (array) => {
-      const currentValue = array[0];
+    if (!Reflect.has(this, `hadamard${n}`)) {
+      const pos = [[0, 0], [0, 1], [1, 0], [1, 1]];
 
-      if (currentValue === 1) {
-        return array;
-      }
+      const hadaFun = (array) => {
+        if (array[0] === 1) {
+          return array;
+        }
 
-      // if (currentValue === 1) {
-      //   return array;
-      // }
+        const length = Math.sqrt(array.length);
+        const cLength = 2 * length;
+        const tmp = [];
 
-      const len = Math.sqrt(array.length);
-      const completeLen = 2 * len;
-      const tmp = [];
+        array.forEach((value, index) => {
+          const { x, y } = this.pos(index, length);
+          const m = BASICTABLE.map(v => v * value / 2);
 
-      array.forEach((value, index) => {
-        const { x, y } = this.pos(index, len);
-        const targetPos = [0, 1, 2, 3];
-        const targetValue = value / 2;
+          for (let i = 0, len = pos.length; i < len; i += 1) {
+            const xBefore = x * 2 + pos[i][0];
+            const yBefore = y * 2 + pos[i][1];
+            const targetIndex = yBefore * cLength + xBefore;
 
-        targetPos.forEach((pos, i) => {
-          const { x: x1, y: y1 } = this.pos(i, 2);
-
-          const xBefore = x * 2 + x1;
-          const yBefore = y * 2 + y1;
-          const targetIndex = yBefore * completeLen + xBefore;
-
-          tmp[targetIndex] = targetValue;
-
-          if (i === 3) {
-            tmp[targetIndex] = -tmp[targetIndex];
+            tmp[targetIndex] = m[i];
           }
         });
-      });
 
-      console.log(tmp);
+        return hadaFun(tmp);
+      };
 
-      return hadaFun(tmp);
+      this[`hadamard${n}`] = hadaFun([n]);
+    }
+
+    return this[`hadamard${n}`];
+  },
+
+  matrixMul(a, aw, ah, b, bw, bh) {
+    const tmp = [];
+
+    for (let i = 0; i < ah; i += 1) {
+      for (let j = 0; j < bw; j += 1) {
+        let result = 0;
+
+        for (let m = 0; m < aw; m += 1) {
+          const lv = a[i * aw + m];
+          const rv = b[m * bw + j];
+
+          result += lv * rv;
+        }
+
+        tmp.push(result);
+      }
+    }
+
+    return {
+      value: tmp,
+      width: bw,
+      height: ah,
     };
-
-
-    return hadaFun([n]);
   },
 };
 
-const wht = () => {
-  console.log(_.hadamard(8));
+const wht = (array) => {
+  // const { length } = array;
+  // const sLength = Math.sqrt(length);
+  // const hadamardArray = _.hadamard(sLength);
+
+  // const mul = _.matrixMul(hadamardArray, sLength, sLength, array, 1, length);
+
+  const test = _.matrixMul([2, 1, -1, 1], 4, 1, [2, 2, 1, 3], 1, 4);
+  console.log(test);
 };
 
 const iwht = () => {

@@ -1,5 +1,6 @@
 import imageManager from './api/imageManager';
 import logger from '../utils/logger';
+import GlobalExp1 from './Global_exp1';
 
 const STATE = {
   wait: 0,
@@ -47,6 +48,8 @@ const imageDAC = {
         this.imgBox.setAttribute('width', value.width);
         this.imgBox.setAttribute('height', value.height);
         this.imgBox.setAttribute('src', objectURL);
+
+        GlobalExp1.update();
       });
   },
 

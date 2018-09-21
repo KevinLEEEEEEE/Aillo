@@ -55,15 +55,18 @@ const _ = {
 
     return mergedArray;
   },
+
+  completeLen(len) {
+    const log2X = Math.log(len) / Math.log(2);
+    return 1 << Math.ceil(log2X);
+  },
 };
 
 const wht88 = (array, w, h) => {
-  const splittedArray = _.splitArray(array, w, h);
-  const whtedArray = splittedArray.map(value => whts.wht2(value));
-  console.log(whtedArray);
-  const mergedArray = _.mergeArray(whtedArray, w, h);
+  const length = _.completeLen(Math.max(w, h));
+  const whtedArray = whts.wht2(array).map(val => Math.abs(val));
 
-  return mergedArray;
+  return whtedArray;
 };
 
 export default {

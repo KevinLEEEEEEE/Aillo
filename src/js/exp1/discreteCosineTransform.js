@@ -1,82 +1,92 @@
-import imageManager from './api/imageManager';
-import logger from '../utils/logger';
+import GlobalExp1 from './Global_exp1';
 import dct88s from './api/myDCT/dct88';
+import logger from '../utils/logger';
+
+const FSM = {
+  none: 0,
+  trans: 1,
+  itrans: 2,
+  err: 3,
+};
+
+const _ = {
+  dct({ data, width, height }) {
+    logger.info('', '------- Start running dct88 -------');
+
+    const dct88Array = dct88s.dct88(data, width, height);
+
+    logger.info('calculate dct88 [√]');
+
+    GlobalExp1.setColorData(dct88Array, 'dct');
+
+    logger.info('-------- End running dct88 --------', '');
+
+    return dct88Array;
+  },
+
+  idct({ data, width, height }) {
+    logger.info('', '------- Start running idct88 -------');
+
+    const idct88Array = dct88s.idct88(data, width, height);
+
+    logger.info('calculate idct88 [√]');
+
+    GlobalExp1.setColorData(idct88Array, 'idct');
+
+    logger.info('-------- End running idct88 --------', '');
+
+    return idct88Array;
+  },
+};
 
 export default function discreteCosineTransform() {
   const dct = document.getElementById('dct');
   const idct = document.getElementById('idct');
-  const imgBox = document.getElementById('imgBox');
   let storage = null;
+  let state = FSM.none;
+
+  const update = () => {
+    state = FSM.none;
+  };
 
   dct.addEventListener('click', () => {
-    if (storage !== null) {
-      alert('you cannot fun dct twice!');
+    switch (state) {
+    case FSM.none:
+      storage = GlobalExp1.getColorData();
+    case FSM.itrans: {
+      const dct88Array = _.dct(storage);
+
+      storage.data = dct88Array;
+      state = FSM.trans;
     }
-
-    logger.info('', '------- Start running dct88 -------');
-
-    const tmpCanvas = imageManager.convertImageToCanvas(imgBox);
-    const { width, height } = tmpCanvas;
-    const imageData = imageManager.convertCanvasToImageData(tmpCanvas, 0, 0, width, height);
-
-    logger.info('get imageData from DOM [√]');
-    // logger.debug(imageData);
-
-    const decoloredImageData = imageManager.decolorization(imageData);
-    const compressedArray = imageManager.compressImageData(decoloredImageData);
-
-    logger.info('decolor and compress imageData [√]');
-    // logger.debug(compressedArray);
-
-    const dct88Array = dct88s.dct88(compressedArray, width, height);
-
-    logger.info('calculate dct88 [√]');
-
-    const tffCanvas = imageManager.convertArrayToCanvas(dct88Array, width, height);
-
-    const base64 = imageManager.convertCanvasToBase64(tffCanvas, 'jpeg');
-
-    imgBox.setAttribute('src', base64);
-
-    logger.info('transform data and update DOM [√]');
-
-    storage = {
-      dct: dct88Array,
-      width,
-      height,
-    };
-
-    logger.info('update storage and unlock idct [√]');
-
-    logger.info('-------- End running dct88 --------', '');
+      break;
+    case FSM.trans:
+      alert('Please run idct before running dct');
+      break;
+    case FSM.err:
+      break;
+    default:
+    }
   });
 
   idct.addEventListener('click', () => {
-    if (storage === null) {
-      alert('please run dct first!');
-      return;
+    switch (state) {
+    case FSM.none:
+    case FSM.itrans:
+      alert('Please run dct before running idct');
+      break;
+    case FSM.trans: {
+      const idct88Array = _.idct(storage);
+
+      storage.data = idct88Array;
+      state = FSM.itrans;
     }
-
-    logger.info('', '------- Start running idct88 -------');
-
-    const { dct: dct88Array, width, height } = storage;
-
-    const idct88Array = dct88s.idct88(dct88Array, width, height);
-
-    logger.info('calculate idct88 [√]');
-
-    const idct88Canvas = imageManager.convertArrayToCanvas(idct88Array, width, height);
-
-    const base64 = imageManager.convertCanvasToBase64(idct88Canvas, 'jpeg');
-
-    imgBox.setAttribute('src', base64);
-
-    logger.info('transform data and update DOM [√]');
-
-    storage = null; // ypdate required
-
-    logger.info('clear storage [√]');
-
-    logger.info('-------- End running idct88 --------', '');
+      break;
+    case FSM.err:
+      break;
+    default:
+    }
   });
+
+  return update;
 }

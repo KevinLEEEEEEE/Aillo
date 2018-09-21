@@ -1,8 +1,15 @@
-import imageManager from './api/imageManager';
-import logger from '../utils/logger';
+import GlobalExp1 from './Global_exp1';
 import fft2s from './api/myFFT/fft2';
+import logger from '../utils/logger';
 
-const _fourier = {
+const FSM = {
+  none: 0,
+  trans: 1,
+  itrans: 2,
+  err: 3,
+};
+
+const _ = {
   zoom(array, limit) {
     const cc = 9e-3;
     const max = Math.max(...array);
@@ -60,97 +67,97 @@ const _fourier = {
   convertPluralToArray(array) {
     return array.map(value => value.magnitude2());
   },
-};
 
-export default function fourierransform() {
-  const fft = document.getElementById('fft');
-  const ifft = document.getElementById('ifft');
-  const imgBox = document.getElementById('imgBox');
-  let storage = null;
-
-  fft.addEventListener('click', () => {
-    if (storage !== null) {
-      alert('you cannot fun fft twice!');
-      return;
-    }
-
+  fft({ data, width, height }) {
     logger.info('', '------- Start running fft2 -------');
 
-    const tmpCanvas = imageManager.convertImageToCanvas(imgBox);
-    const { width, height } = tmpCanvas;
-    const imageData = imageManager.convertCanvasToImageData(tmpCanvas, 0, 0, width, height);
-
-    logger.info('get imageData from DOM [√]');
-    // logger.debug(imageData);
-
-    const decoloredImageData = imageManager.decolorization(imageData);
-    const compressedArray = imageManager.compressImageData(decoloredImageData);
-
-    logger.info('decolor and compress imageData [√]');
-    // logger.debug(compressedArray);
-
-    const fft2Array = fft2s.fft2(compressedArray, width, height);
+    const fft2Array = fft2s.fft2(data, width, height);
 
     logger.info('calculate fft2 [√]');
-    // logger.debug(fft2Array);
 
-    const spectrum = _fourier.convertPluralToArray(fft2Array);
-    const zoomedArray = _fourier.zoom(spectrum, 255);
+    const spectrum = _.convertPluralToArray(fft2Array);
+    const zoomedArray = _.zoom(spectrum, 255);
 
     logger.info('spectrum and zoom data [√]');
-    // logger.debug(zoomedArray);
 
-    const displacedArray = _fourier.displace(zoomedArray, width, height, [3, 2, 1, 0], 2, 2);
+    const displacedArray = _.displace(zoomedArray, width, height, [3, 2, 1, 0], 2, 2);
 
     logger.info('mosaic image to center [√]');
 
-    const tffCanvas = imageManager.convertArrayToCanvas(displacedArray, width, height);
-
-    const base64 = imageManager.convertCanvasToBase64(tffCanvas, 'jpeg');
-
-    imgBox.setAttribute('src', base64);
-
-    logger.info('transform data and update DOM [√]');
-
-    storage = {
-      fft: fft2Array,
-      width,
-      height,
-    };
-
-    logger.info('update storage and unlock ifft [√]');
+    GlobalExp1.setColorData(displacedArray, 'tff');
 
     logger.info('-------- End running fft2 --------', '');
-  });
 
-  ifft.addEventListener('click', () => {
-    if (storage === null) {
-      alert('please run fft first!');
-      return;
-    }
+    return fft2Array;
+  },
 
+  ifft({ data, width, height }) {
     logger.info('', '------- Start running ifft2 -------');
 
-    const { fft: fft2Array, width, height } = storage;
-
-    const ifft2Array = fft2s.ifft2(fft2Array, width, height);
+    const ifft2Array = fft2s.ifft2(data, width, height);
 
     logger.info('calculate ifft2 [√]');
 
     const regressedArray = fft2s.regress(ifft2Array, width, height);
 
-    const ifftCanvas = imageManager.convertArrayToCanvas(regressedArray, width, height);
+    logger.info('regress data [√]');
 
-    const base64 = imageManager.convertCanvasToBase64(ifftCanvas, 'jpeg');
-
-    imgBox.setAttribute('src', base64);
-
-    logger.info('transform data and update DOM [√]');
-
-    storage = null; // ypdate required
-
-    logger.info('clear storage [√]');
+    GlobalExp1.setColorData(regressedArray, 'ifft');
 
     logger.info('-------- End running ifft2 --------', '');
+
+    return regressedArray;
+  },
+};
+
+export default function fourierransform() {
+  const fft = document.getElementById('fft');
+  const ifft = document.getElementById('ifft');
+  let state = FSM.none;
+  let storage = null;
+
+  const update = () => {
+    state = FSM.none;
+  };
+
+  fft.addEventListener('click', () => {
+    switch (state) {
+    case FSM.none:
+      storage = GlobalExp1.getColorData();
+    case FSM.itrans: {
+      const fft2Array = _.fft(storage);
+
+      storage.data = fft2Array;
+      state = FSM.trans;
+    }
+      break;
+    case FSM.trans:
+      alert('Please run ifft before running fft');
+      break;
+    case FSM.err:
+      break;
+    default:
+    }
   });
+
+  ifft.addEventListener('click', () => {
+    switch (state) {
+    case FSM.none:
+    case FSM.itrans:
+      alert('Please run fft before running ifft');
+      break;
+    case FSM.trans: {
+      const ifft2Array = _.ifft(storage);
+
+      storage.data = ifft2Array;
+      state = FSM.itrans;
+    }
+      break;
+    case FSM.err:
+      break;
+    default:
+    }
+  });
+
+  return update;
 }

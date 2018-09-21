@@ -1,11 +1,5 @@
-import '../css/imageDisplayAndConvert.css';
+import '../css/CSS_exp1.css';
 
-import imageDisplayAndConvert from './exp1/imageDisplayAndConvert';
-import fourierTransform from './exp1/fourierTransform';
-import discreteCosineTransform from './exp1/discreteCosineTransform';
-import WalahHadamardTrans from './exp1/WalahHadamardTrans';
+import GlobalExp1 from './exp1/Global_exp1';
 
-imageDisplayAndConvert();
-fourierTransform();
-discreteCosineTransform();
-WalahHadamardTrans();
+GlobalExp1.init();

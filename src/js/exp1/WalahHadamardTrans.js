@@ -1,64 +1,125 @@
+import GlobalExp1 from './Global_exp1';
 import imageManager from './api/imageManager';
 import logger from '../utils/logger';
-import whts from './api/myWHT/wht';
 import wht88s from './api/myWHT/wht88';
+
+const FSM = {
+  none: 0,
+  trans: 1,
+  itrans: 2,
+  err: 3,
+};
+
+const _ = {
+  zoom(array, limit) {
+    const cc = 9e-3;
+    const max = Math.max(...array);
+    const limitedMax = Math.log(max * cc + 1);
+
+    return array.map((value) => {
+      const color = Math.log(cc * value + 1);
+
+      return Math.round(color * limit / limitedMax);
+    });
+  },
+
+  wht({ data, width, height }) {
+    logger.info('', '------- Start running wht88 -------');
+
+    const wht88Array = wht88s.wht88(data, width, height);
+
+    logger.info('calculate wht88 [√]');
+
+    logger.info('-------- End running wht88 --------', '');
+
+    return wht88Array;
+  },
+
+  whtZoom(data, scale) {
+    const zoomedArray = data.map(value => value * scale);
+
+    GlobalExp1.setColorData(zoomedArray, 'wht');
+
+    logger.info(`scale and display zoomed by: ${scale} [√]`);
+  },
+
+  iwht() {
+    logger.info('', '------- Start running iwht88 -------');
+
+    const iwht88Array = GlobalExp1.getColorData().data;
+
+    GlobalExp1.setColorData(iwht88Array, 'iwht');
+
+    logger.info('', '------- Start running iwht88 -------');
+
+    return iwht88Array;
+  },
+};
 
 export default function WalahHadamardTrans() {
   const wht = document.getElementById('wht');
   const iwht = document.getElementById('iwht');
-  const imgBox = document.getElementById('imgBox');
+  const whtRange = document.getElementById('whtRange');
   let storage = null;
-
-  // const i = whts.wht([0, 0, 1, 1, 0, 0, 1, 1]);
-  // const g = wht88s.wht88([1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1], 4, 4);
-
-  // console.log(g);
+  let state = FSM.none;
 
   wht.addEventListener('click', () => {
-    if (storage !== null) {
-      alert('you cannot fun fft twice!');
-      return;
+    switch (state) {
+    case FSM.none:
+      storage = GlobalExp1.getColorData();
+    case FSM.itrans: {
+      const wht88Array = _.wht(storage);
+
+      _.whtZoom(wht88Array, 255);
+
+      storage.data = wht88Array;
+      state = FSM.trans;
     }
+      break;
+    case FSM.trans:
+      alert('Please run iwht before running wht');
+      break;
+    case FSM.err:
+      break;
+    default:
+    }
+  });
 
-    logger.info('', '------- Start running wht88 -------');
-
-    const tmpCanvas = imageManager.convertImageToCanvas(imgBox);
-    const { width, height } = tmpCanvas;
-    const imageData = imageManager.convertCanvasToImageData(tmpCanvas, 0, 0, width, height);
-
-    logger.info('get imageData from DOM [√]');
-    // logger.debug(imageData);
-
-    const decoloredImageData = imageManager.decolorization(imageData);
-    const compressedArray = imageManager.compressImageData(decoloredImageData);
-
-    logger.info('decolor and compress imageData [√]');
-    // logger.debug(compressedArray);
-
-    const wht88Array = wht88s.wht88(compressedArray, width, height);
-
-    logger.info('calculate wht88 [√]');
-
-    const tffCanvas = imageManager.convertArrayToCanvas(wht88Array, width, height);
-
-    const base64 = imageManager.convertCanvasToBase64(tffCanvas, 'jpeg');
-
-    imgBox.setAttribute('src', base64);
-
-    logger.info('transform data and update DOM [√]');
-
-    storage = {
-      wht: wht88Array,
-      width,
-      height,
-    };
-
-    logger.info('update storage and unlock idct [√]');
-
-    logger.info('-------- End running wht88 --------', '');
+  whtRange.addEventListener('change', (e) => {
+    switch (state) {
+    case FSM.none:
+      alert('Please run wht before changing the scale value');
+      break;
+    case FSM.itrans:
+      alert('Only available after running wht');
+      break;
+    case FSM.trans: {
+      const { value } = e.target;
+      _.whtZoom(storage.data, value);
+    }
+      break;
+    case FSM.err:
+      break;
+    default:
+    }
   });
 
   iwht.addEventListener('click', () => {
+    switch (state) {
+    case FSM.none:
+    case FSM.itrans:
+      alert('Please run dct before running idct');
+      break;
+    case FSM.trans: {
+      const iwht88Array = _.iwht88Array();
 
+      storage = iwht88Array;
+      state = FSM.itrans;
+    }
+      break;
+    case FSM.err:
+      break;
+    default:
+    }
   });
 }

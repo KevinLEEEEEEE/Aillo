@@ -24,38 +24,34 @@ const _ = {
   },
 
   hadamard(n) {
-    if (!Reflect.has(this, `hadamard${n}`)) {
-      const pos = [[0, 0], [0, 1], [1, 0], [1, 1]];
+    const pos = [[0, 0], [0, 1], [1, 0], [1, 1]];
 
-      const hadaFun = (array) => {
-        if (array[0] === 1) {
-          return array;
+    const hadaFun = (array) => {
+      if (array[0] === 1) {
+        return array;
+      }
+
+      const length = Math.sqrt(array.length);
+      const cLength = 2 * length;
+      const tmp = [];
+
+      array.forEach((value, index) => {
+        const { x, y } = this.pos(index, length);
+        const m = BASICTABLE.map(v => v * value / 2);
+
+        for (let i = 0, len = pos.length; i < len; i += 1) {
+          const xBefore = x * 2 + pos[i][0];
+          const yBefore = y * 2 + pos[i][1];
+          const targetIndex = yBefore * cLength + xBefore;
+
+          tmp[targetIndex] = m[i];
         }
+      });
+      console.log(tmp);
+      return hadaFun(tmp);
+    };
 
-        const length = Math.sqrt(array.length);
-        const cLength = 2 * length;
-        const tmp = [];
-
-        array.forEach((value, index) => {
-          const { x, y } = this.pos(index, length);
-          const m = BASICTABLE.map(v => v * value / 2);
-
-          for (let i = 0, len = pos.length; i < len; i += 1) {
-            const xBefore = x * 2 + pos[i][0];
-            const yBefore = y * 2 + pos[i][1];
-            const targetIndex = yBefore * cLength + xBefore;
-
-            tmp[targetIndex] = m[i];
-          }
-        });
-
-        return hadaFun(tmp);
-      };
-
-      this[`hadamard${n}`] = hadaFun([n]);
-    }
-
-    return this[`hadamard${n}`];
+    return hadaFun([n]);
   },
 
   matrixMul(a, aw, ah, b, bw) {

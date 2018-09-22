@@ -1,7 +1,6 @@
 import GlobalExp1 from './Global_exp1';
-import imageManager from './api/imageManager';
-import logger from '../utils/logger';
 import wht88s from './api/myWHT/wht88';
+import logger from '../utils/logger';
 
 const FSM = {
   none: 0,
@@ -59,14 +58,24 @@ const _ = {
 export default function WalahHadamardTrans() {
   const wht = document.getElementById('wht');
   const iwht = document.getElementById('iwht');
-  const whtRange = document.getElementById('whtRange');
+  const whtEnlarge = document.getElementById('whtEnlarge');
+  const whtNarrow = document.getElementById('whtNarrow');
+  const whtScale = document.getElementById('whtScale');
   let storage = null;
+  let scale = 255;
   let state = FSM.none;
+
+  const update = () => {
+    state = FSM.none;
+  };
 
   wht.addEventListener('click', () => {
     switch (state) {
     case FSM.none:
       storage = GlobalExp1.getColorData();
+      if (storage.data === undefined) {
+        break;
+      }
     case FSM.itrans: {
       const wht88Array = _.wht(storage);
 
@@ -85,7 +94,7 @@ export default function WalahHadamardTrans() {
     }
   });
 
-  whtRange.addEventListener('change', (e) => {
+  whtEnlarge.addEventListener('click', () => {
     switch (state) {
     case FSM.none:
       alert('Please run wht before changing the scale value');
@@ -93,16 +102,34 @@ export default function WalahHadamardTrans() {
     case FSM.itrans:
       alert('Only available after running wht');
       break;
-    case FSM.trans: {
-      const { value } = e.target;
-      _.whtZoom(storage.data, value);
-    }
+    case FSM.trans:
+      _.whtZoom(storage.data, scale += 50);
+      whtScale.innerHTML = scale;
       break;
     case FSM.err:
       break;
     default:
     }
   });
+
+  whtNarrow.addEventListener('click', () => {
+    switch (state) {
+    case FSM.none:
+      alert('Please run wht before changing the scale value');
+      break;
+    case FSM.itrans:
+      alert('Only available after running wht');
+      break;
+    case FSM.trans:
+      _.whtZoom(storage.data, scale -= 50);
+      whtScale.innerHTML = scale;
+      break;
+    case FSM.err:
+      break;
+    default:
+    }
+  });
+
 
   iwht.addEventListener('click', () => {
     switch (state) {
@@ -111,7 +138,7 @@ export default function WalahHadamardTrans() {
       alert('Please run dct before running idct');
       break;
     case FSM.trans: {
-      const iwht88Array = _.iwht88Array();
+      const iwht88Array = _.iwht();
 
       storage = iwht88Array;
       state = FSM.itrans;
@@ -122,4 +149,6 @@ export default function WalahHadamardTrans() {
     default:
     }
   });
+
+  return update;
 }

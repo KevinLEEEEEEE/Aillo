@@ -47,7 +47,7 @@ const _ = {
           tmp[targetIndex] = m[i];
         }
       });
-      console.log(tmp);
+
       return hadaFun(tmp);
     };
 

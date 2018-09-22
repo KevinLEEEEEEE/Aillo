@@ -1,59 +1,41 @@
 import whts from './wht';
 
-const BLOCKSIZE = 8;
-
 const _ = {
-  splitArray(array, w, h) {
-    const hBlock = Math.ceil(w / BLOCKSIZE);
-    const vBlock = Math.ceil(h / BLOCKSIZE);
-    const totalBlock = hBlock * vBlock;
-    const splittedArray = [];
+  pos(index, w) {
+    const x = index % w;
+    const y = Math.floor(index / w);
 
-    for (let i = 0; i < totalBlock; i += 1) {
-      const tmp = [];
-      const { x: x1, y: y1 } = whts.pos(i, hBlock);
-
-      for (let j = 0; j < BLOCKSIZE * BLOCKSIZE; j += 1) {
-        const { x: x2, y: y2 } = whts.pos(j, BLOCKSIZE);
-        const x = x1 * BLOCKSIZE + x2;
-        const y = y1 * BLOCKSIZE + y2;
-
-        if (x >= w || y >= h) {
-          tmp.push(0);
-        } else {
-          tmp.push(array[y * w + x]);
-        }
-      }
-
-      splittedArray.push(tmp);
-    }
-
-    return splittedArray;
+    return { x, y };
   },
 
-  mergeArray(array, w, h) {
-    const hBlock = Math.ceil(w / BLOCKSIZE);
-    const mergedArray = [];
+  formatArray(array, w, h, targetSize) {
+    const tmp = [];
 
-    array.forEach((val, i) => {
-      const { x: x1, y: y1 } = whts.pos(i, hBlock);
+    for (let i = 0, j = targetSize ** 2; i < j; i += 1) {
+      const { x, y } = this.pos(i, targetSize);
 
-      val.forEach((v, j) => {
-        const { x: x2, y: y2 } = whts.pos(j, BLOCKSIZE);
-        const x = x1 * BLOCKSIZE + x2;
-        const y = y1 * BLOCKSIZE + y2;
+      if (x >= w || y >= h) {
+        tmp.push(0);
+      } else {
+        tmp.push(array[y * w + x]);
+      }
+    }
 
-        if (x < w && y < h) {
-          const xx = x1 * BLOCKSIZE + x2;
-          const yy = y1 * BLOCKSIZE + y2;
-          const index = yy * w + xx;
+    return tmp;
+  },
 
-          mergedArray[index] = v;
-        }
-      });
-    });
+  iformatArray(array, w, h, targetSize) {
+    const tmp = [];
 
-    return mergedArray;
+    for (let i = 0, j = targetSize ** 2; i < j; i += 1) {
+      const { x, y } = this.pos(i, targetSize);
+
+      if (x < w && y < h) {
+        tmp.push(array[i]);
+      }
+    }
+
+    return tmp;
   },
 
   completeLen(len) {
@@ -64,9 +46,11 @@ const _ = {
 
 const wht88 = (array, w, h) => {
   const length = _.completeLen(Math.max(w, h));
-  const whtedArray = whts.wht2(array).map(val => Math.abs(val));
+  const formattedArray = _.formatArray(array, w, h, length);
+  const whtedArray = whts.wht2(formattedArray).map(val => Math.abs(val));
+  const iformattedArray = _.iformatArray(whtedArray, w, h, length);
 
-  return whtedArray;
+  return iformattedArray;
 };
 
 export default {

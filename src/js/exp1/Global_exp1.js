@@ -6,10 +6,6 @@ import walahHadamardTrans from './walahHadamardTrans';
 import imageManager from './api/imageManager';
 import logger from '../utils/logger';
 
-const _ = {
-
-};
-
 const GlobalExp1 = {
   init() {
     imageDisplayAndConvert();
@@ -20,8 +16,13 @@ const GlobalExp1 = {
     logger.info('[G] init all events [√]');
 
     this.imgBox = document.getElementById('imgBox');
-    this.monitorList = [m1, m2];
-    this.storage = null;
+    this.monitorList = [m1, m2, m3];
+    console.log(this.monitorList);
+    this.storage = {
+      data: null,
+      width: null,
+      height: null,
+    };
 
     logger.info('[G] init Global storage [√]');
   },

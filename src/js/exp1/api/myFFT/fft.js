@@ -88,7 +88,7 @@ const _ = {
     return 1 << Math.ceil(log2X);
   },
 
-  formattedArray(array) {
+  formatArray(array) {
     const { length } = array;
     const len = _.completeLen(length);
     const tmp = [];
@@ -136,7 +136,7 @@ const _ = {
 };
 
 const fft = (array) => {
-  const formattedArray = _.formattedArray(array);
+  const formattedArray = _.formatArray(array);
   const fftedArray = _.butterfly(formattedArray);
 
   return fftedArray;

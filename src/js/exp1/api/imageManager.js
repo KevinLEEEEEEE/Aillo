@@ -1,5 +1,4 @@
 import bitMapManager from './bitMapManager';
-import logger from '../../utils/logger';
 
 const SUPPORTEDFORMAT = ['png', 'jpeg', 'bmp', 'dib'];
 

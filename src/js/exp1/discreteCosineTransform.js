@@ -53,6 +53,9 @@ export default function discreteCosineTransform() {
     switch (state) {
     case FSM.none:
       storage = GlobalExp1.getColorData();
+      if (storage.data === undefined) {
+        break;
+      }
     case FSM.itrans: {
       const dct88Array = _.dct(storage);
 

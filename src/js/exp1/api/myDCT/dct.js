@@ -42,21 +42,9 @@ const _ = {
   },
 };
 
-const dct = (array, w = array.length, h = 1) => {
-  const res = _.cal(array, w, h, false);
+const dct = (array, w = array.length, h = 1) => _.cal(array, w, h, false);
 
-  // console.log(res);
-
-  return res;
-};
-
-const idct = (array, w = array.length, h = 1) => {
-  const res = _.cal(array, w, h, true);
-
-  // console.log(res);
-
-  return res;
-};
+const idct = (array, w = array.length, h = 1) => _.cal(array, w, h, true);
 
 export default {
   dct,

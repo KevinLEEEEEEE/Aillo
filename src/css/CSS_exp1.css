@@ -1,11 +1,11 @@
-#exp {
-  width: 100%;
+.exp {
   min-width: 1000px;
+  margin-bottom: 500px;
 }
 
 #imageDisplayAndConvert {
   display: flex;
-  align-content: center;
+  align-items: center;
   justify-content: center;
 }
 
@@ -64,7 +64,7 @@
   left: 5%;
   right: 5%;
   z-index: -1;
-  background-color: rgba(0, 0, 0, .08);
+  background-color: rgba(0, 0, 0, .07);
 }
 
 #download, #restore {
@@ -79,6 +79,14 @@
   font-size: .7rem;
 }
 
+.roundBtn {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  margin-right: 5px;
+  border-radius: 100%;
+}
+
 .hide {
   opacity: 0;
 }
@@ -86,6 +94,19 @@
 .annotation {
   transform: scale(.8) translateX(-10%);
   color: rgba(0, 0, 0, 0.5);
+}
+
+button {
+  margin: 0 0 0 2px;
+  padding: 5px 13px;
+  border: transparent;
+  border-radius: 13px;
+  outline: none;
+  background-color: rgba(0, 0, 0, .09);
+}
+
+button:hover {
+  background-color: rgba(0, 0, 0, .14);
 }
 
 #rename {

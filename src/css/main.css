@@ -1,0 +1,35 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-width: 500px;
+  padding: 30px 0 70px 0;
+  margin: 0 0 40px 0;
+  background-color: rgba(0, 0, 0, .04);
+}
+
+header h1 {
+  margin-bottom: 10px;
+}
+
+header p {
+  margin: 0;
+  font-size: .7rem;
+  letter-spacing: 3px;
+}
+
+.title {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.title img {
+  width: 1040px;
+}

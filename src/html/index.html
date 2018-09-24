@@ -7,7 +7,12 @@
     <title>starts</title>
   </head>
   <body>
+    <header>
+      <h1>数 字 图 像 处 理</h1>
+      <p>⊱ Digital Image Processing Assignment ⊰</p>
+    </header>
     <div id="exp1" class="exp">
+      <div class="title" id="titleExp1"></div>
       <div id="imageDisplayAndConvert">
         <div class="fileBox">
             <label id="inputBox" class="inputBox"><input type="file"></label>
@@ -30,19 +35,19 @@
               <option value="png">png</option>
               <option value="bmp">bmp</option>
             </select>
-            <p class="annotation">注意：不同浏览器下bitmap的下载格式可能不同，例如.bmp或.dib</p>
+            <p class="annotation">* 不同浏览器下bitmap的下载格式可能不同，例如.bmp或.dib *</p>
           </div>
           <div class="options">
             <span>傅里叶：</span>
             <button id="fft">Fast Fourier Transform</button>
             <button id="ifft">Fast Fourier Inversion</button>
-            <p class="annotation">注意：此fft与ifft为阻塞运算，届时浏览器将短时间内无反应</p>
+            <p class="annotation">* 此为阻塞运算，浏览器将短时间内无响应 *</p>
           </div>
           <div class="options">
             <span>离散余弦：</span>
             <button id="dct">Discrete Cosine Transform</button>
             <button id="idct">Discrete Cosine Inversion</button>
-            <p class="annotation">注意：结果已量化，采用缩放值：2 以增强效果，分块大小为8px</p>
+            <p class="annotation">* 结果已量化，采用缩放值：2 以增强效果，分块大小8px *</p>
           </div>
           <div class="options">
             <span>沃尔什-哈达玛：</span>
@@ -51,9 +56,9 @@
           </div>
           <div class="options">
               <span>沃尔什-哈达玛缩放：</span>
-              <button id="whtNarrow">Narrow</button>
-              <button id="whtEnlarge">Enlarge</button>
-              <span class="annotation">当前缩放值：</span>
+              <button id="whtNarrow" class="roundBtn">-</button>
+              <button id="whtEnlarge" class="roundBtn">+</button>
+              <span class="annotation">current scale : </span>
               <span class="annotation" id="whtScale">255</span>
             </div>
           <a id="download" class="options disable" download="#" href="#">download</a>              

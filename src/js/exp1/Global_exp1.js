@@ -6,6 +6,8 @@ import walahHadamardTrans from './walahHadamardTrans';
 import imageManager from './api/imageManager';
 import logger from '../utils/logger';
 
+import fourierImg from '../../image/fourier.jpg';
+
 const GlobalExp1 = {
   init() {
     imageDisplayAndConvert();
@@ -13,11 +15,10 @@ const GlobalExp1 = {
     const m2 = discreteCosineTransform();
     const m3 = walahHadamardTrans();
 
-    logger.info('[G] init all events [√]');
+    logger.info('[G] init all events listener [√]');
 
     this.imgBox = document.getElementById('imgBox');
     this.monitorList = [m1, m2, m3];
-    console.log(this.monitorList);
     this.storage = {
       data: null,
       width: null,
@@ -25,6 +26,11 @@ const GlobalExp1 = {
     };
 
     logger.info('[G] init Global storage [√]');
+
+    const img = new Image();
+    img.src = fourierImg;
+
+    document.getElementById('titleExp1').appendChild(img);
   },
 
   getColorData() {

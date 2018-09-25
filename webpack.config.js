@@ -25,7 +25,7 @@ module.exports = {
     new webpack.HotModuleReplacementPlugin(),
   ],
   output: {
-    filename: 'js/[name].bundle.js',
+    filename: 'assets/[name].bundle.js',
     path: path.resolve(__dirname, 'dist'),
   },
   module: {

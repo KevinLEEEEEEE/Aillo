@@ -11,16 +11,40 @@
       <h1>数 字 图 像 处 理</h1>
       <p>⊱ Digital Image Processing Assignment ⊰</p>
     </header>
-    <div id="exp1" class="exp">
-      <div class="title" id="titleExp1"></div>
-      <div id="imageDisplayAndConvert">
-        <div class="fileBox">
-            <label id="inputBox" class="inputBox"><input type="file"></label>
-            <div id="inputHelper">
+    <div id="exp2" class="exp">
+        <div class="title" id="titleExp2"></div>
+        <div class="expBox">
+          <div class="fileBox">
+            <label id="inputBox2" class="inputBox"><input type="file"></label>
+            <div id="inputHelper2" class="inputHelper">
                 <p>+</p>
                 <p>点击或拖动文件至此</p>
             </div>
-            <div id="imgContainer"><img id="imgBox"></div>
+            <div id="imgContainer2" class="imgContainer"><img id="imgBox2"></div>
+          </div>
+          <div>
+            <div id="canvasContainer">
+              <canvas id="histogramCanvas"></canvas>
+            </div>
+            <div class="options">
+              <span>step：</span>
+              <input type="text" name="step" id="step">
+              <button id="histogram">histogram</button>
+            </div>
+          </div>
+      </div>
+    </div>
+
+    <div id="exp1" class="exp">
+      <div class="title" id="titleExp1"></div>
+      <div class="expBox">
+        <div class="fileBox">
+            <label id="inputBox" class="inputBox"><input type="file"></label>
+            <div id="inputHelper" class="inputHelper">
+                <p>+</p>
+                <p>点击或拖动文件至此</p>
+            </div>
+            <div id="imgContainer" class="imgContainer"><img id="imgBox"></div>
         </div> 
         <div class="downloadBox">
           <div class="rename options">

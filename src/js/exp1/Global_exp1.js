@@ -79,7 +79,6 @@ const GlobalExp1 = {
 
     logger.info('[G] clear all local storage [√]');
   },
-
 };
 
 export default GlobalExp1;

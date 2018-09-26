@@ -1,0 +1,18 @@
+#histogramCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgb(200, 200, 200);
+}
+
+#step {
+  width: 50px;
+  outline: none;
+  border: none;
+  border-bottom: 1px black solid;
+}
+
+#canvasContainer {
+  position: relative;
+  height: 350px;
+}

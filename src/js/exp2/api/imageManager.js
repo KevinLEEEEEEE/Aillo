@@ -34,17 +34,16 @@ const imageManager = {
     canvas.setAttribute('width', width);
     canvas.setAttribute('height', height);
 
-    for (let i = 0; i < height; i += 1) {
-      for (let j = 0; j < width; j += 1) {
-        const pos = i * width + j;
+    const imageData = ctx.getImageData(0, 0, width, height);
 
-        ctx.fillStyle = `rgb(${array[pos]
-        },${array[pos]
-        },${array[pos]})`;
-
-        ctx.fillRect(j, i, 1, 1);
-      }
+    for (let i = 0, j = width * height; i < j; i += 1) {
+      imageData.data[i * 4] = array[i];
+      imageData.data[i * 4 + 1] = array[i];
+      imageData.data[i * 4 + 2] = array[i];
+      imageData.data[i * 4 + 3] = 255;
     }
+
+    ctx.putImageData(imageData, 0, 0);
 
     return canvas;
   },

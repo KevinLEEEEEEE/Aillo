@@ -117,17 +117,26 @@ const _ = {
   },
 
   drawCurvePointsOnCanvas(points, context) {
-    const midPoint = this.getFunctionPoint(points[1]);
-    const curveFunction = this.getCurveFunction(midPoint);
+    const midPoint = points[1];
+    const midFunctionPoint = this.getFunctionPoint(midPoint);
+    const curveFunction = this.getCurveFunction(midFunctionPoint);
 
-    context.clearRect(0, 0, CANVASW, CANVASH);
+    this.clear(context);
+
     context.beginPath();
+
     for (let x = 0; x < CANVASW; x += 1) {
       const y = curveFunction(x);
       this.drawPixel(x, 256 - y, context);
     }
+
     context.closePath();
-    this.drawCircle(midPoint[0], 256 - midPoint[1], 3, context);
+
+    this.drawCircle(midPoint[0], midPoint[1], 3, context);
+  },
+
+  clear(context) {
+    context.clearRect(0, 0, CANVASW, CANVASH);
   },
 
   drawPixel(x, y, context) {
@@ -138,13 +147,15 @@ const _ = {
     context.beginPath();
     context.moveTo(x1, y1);
     context.lineTo(x2, y2);
-    context.closePath();
     context.stroke();
+    context.closePath();
   },
 
   drawCircle(x, y, radius, context) {
+    context.beginPath();
     context.arc(x, y, radius, 0, 2 * Math.PI);
     context.fill();
+    context.closePath();
   },
 
   getDistance([x1, y1], [x2, y2]) {
@@ -183,10 +194,10 @@ export default function histogram() {
   let pointCount = 0;
   let canMove = false;
   let isCurve = false;
-  let step = 1;
+  let step = -1;
 
-  const linePoints = [[0, CANVASH], [CANVASW, 0]];
-  const curvePoints = [[0, CANVASH], [CANVASW / 2, CANVASH / 2 + 20], [CANVASW, 0]];
+  let linePoints = [[0, CANVASH], [CANVASW, 0]];
+  let curvePoints = [[0, CANVASH], [CANVASW / 2, CANVASH / 2 + 20], [CANVASW, 0]];
 
   const update = () => {
     storage = GlobalExp2.getColorData();
@@ -209,6 +220,11 @@ export default function histogram() {
 
   histogramBtn.addEventListener('click', () => {
     step = stepInput.value || 256;
+
+    linePoints = [[0, CANVASH], [CANVASW, 0]];
+    curvePoints = [[0, CANVASH], [CANVASW / 2, CANVASH / 2 + 20], [CANVASW, 0]];
+
+    GlobalExp2.setColorData(storage.data);
 
     const histogramData = _.getHistogram(storage.data, step);
 
@@ -281,8 +297,8 @@ export default function histogram() {
       const deltaY = lastPos[1] - functionPoint[1];
       const x = lastPos[0] - deltaX;
       const y = lastPos[1] - deltaY;
-      const rBorder = linePoints[movePointIndex + 1][0];
-      const lBorder = linePoints[movePointIndex - 1][0];
+      const rBorder = isCurve ? curvePoints[2][0] : linePoints[movePointIndex + 1][0];
+      const lBorder = isCurve ? curvePoints[0][0] : linePoints[movePointIndex - 1][0];
 
       if (x < rBorder && x > lBorder) {
         if (isCurve === false) {

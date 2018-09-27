@@ -8,8 +8,8 @@ const DISTANCE = 10;
 
 const _ = {
   init(hcanvas, ccanvas) {
-    const hcontext = hcanvas.getContext('2d');
-    const ccontext = ccanvas.getContext('2d');
+    const histogramContext = hcanvas.getContext('2d');
+    const adjustContext = ccanvas.getContext('2d');
 
     hcanvas.style.width = CANVASW;
     hcanvas.style.height = CANVASH;
@@ -21,15 +21,15 @@ const _ = {
     ccanvas.width = CANVASW;
     ccanvas.height = CANVASH;
 
-    hcontext.fillStyle = 'rgb(160, 160, 160)';
+    histogramContext.fillStyle = 'rgb(160, 160, 160)';
 
-    ccontext.lineWidth = 0.5;
-    ccontext.strokeStyle = 'rgba(255, 255, 255)';
-    ccontext.fillStyle = 'rgb(255, 255, 255)';
+    adjustContext.lineWidth = 0.5;
+    adjustContext.strokeStyle = 'rgba(255, 255, 255)';
+    adjustContext.fillStyle = 'rgb(255, 255, 255)';
 
     return {
-      hcontext,
-      ccontext,
+      histogramContext,
+      adjustContext,
     };
   },
 
@@ -50,8 +50,8 @@ const _ = {
     return tmp;
   },
 
-  mapHistogram(data, functionPoints) {
-    const points = functionPoints.map(value => this.getFunctionPoint(value));
+  mapHistogramL(data, linePoints) {
+    const points = linePoints.map(value => this.getFunctionPoint(value));
 
     return data.map((value) => {
       let newVal = 0;
@@ -68,6 +68,12 @@ const _ = {
 
       return newVal;
     });
+  },
+
+  mapHistogramC(data, curvePoints) {
+    const curveFunction = this.getCurveFunction(curvePoints[1]);
+
+    return data.map(value => curveFunction(value));
   },
 
   drawHistogramOnCanvas(data, context) {
@@ -90,7 +96,7 @@ const _ = {
     return [x, CANVASH - y];
   },
 
-  drawFunctionPointsOnCanvas(points, context) {
+  drawlinePointsOnCanvas(points, context) {
     context.clearRect(0, 0, CANVASW, CANVASH);
 
     for (let i = 0, j = points.length - 1; i < j; i += 1) {
@@ -99,6 +105,33 @@ const _ = {
         this.drawCircle(points[i + 1][0], points[i + 1][1], 3, context);
       }
     }
+  },
+
+  getCurveFunction([x, y]) {
+    const a = Math.E ** (Math.log(x / CANVASW) / (y / CANVASH - 1));
+    return (x1) => {
+      const result = Math.log(x1 / CANVASW) / Math.log(a) + 1;
+
+      return result >= 0 ? result * CANVASH : 0;
+    };
+  },
+
+  drawCurvePointsOnCanvas(points, context) {
+    const midPoint = this.getFunctionPoint(points[1]);
+    const curveFunction = this.getCurveFunction(midPoint);
+
+    context.clearRect(0, 0, CANVASW, CANVASH);
+    context.beginPath();
+    for (let x = 0; x < CANVASW; x += 1) {
+      const y = curveFunction(x);
+      this.drawPixel(x, 256 - y, context);
+    }
+    context.closePath();
+    this.drawCircle(midPoint[0], 256 - midPoint[1], 3, context);
+  },
+
+  drawPixel(x, y, context) {
+    context.fillRect(x, y, 1, 1);
   },
 
   drawLine(x1, y1, x2, y2, context) {
@@ -114,25 +147,21 @@ const _ = {
     context.fill();
   },
 
-  drawCurve(x, y, context) {
-
-  },
-
   getDistance([x1, y1], [x2, y2]) {
     return Math.sqrt(((x1 - x2) ** 2) + ((y1 - y2) ** 2));
   },
 
-  getClosestPoint(point, functionPoints) {
+  getClosestPoint(point, linePoints) {
     const distance = [];
 
-    for (let i = 0, j = functionPoints.length; i < j; i += 1) {
-      distance.push(this.getDistance(point, functionPoints[i]));
+    for (let i = 0, j = linePoints.length; i < j; i += 1) {
+      distance.push(this.getDistance(point, linePoints[i]));
     }
 
     const min = Math.min(...distance);
     const index = distance.indexOf(min);
 
-    if (min > DISTANCE || index === 0 || index === functionPoints.length - 1) {
+    if (min > DISTANCE || index === 0 || index === linePoints.length - 1) {
       return -1;
     }
 
@@ -145,6 +174,7 @@ export default function histogram() {
   const curveCanvas = document.getElementById('curveCanvas');
   const histogramBtn = document.getElementById('histogram');
   const stepInput = document.getElementById('step');
+  const transBtn = document.getElementById('trans');
   const context = _.init(histogramCanvas, curveCanvas);
 
   let storage = null;
@@ -152,36 +182,38 @@ export default function histogram() {
   let movePointIndex = -1;
   let pointCount = 0;
   let canMove = false;
+  let isCurve = false;
   let step = 1;
 
-  const functionPoints = [[0, CANVASH], [CANVASW, 0]];
+  const linePoints = [[0, CANVASH], [CANVASW, 0]];
+  const curvePoints = [[0, CANVASH], [CANVASW / 2, CANVASH / 2 + 20], [CANVASW, 0]];
 
   const update = () => {
-    if (storage === null) {
-      return;
-    }
-
-    console.log('update');
+    storage = GlobalExp2.getColorData();
   };
 
   const updateImage = () => {
-    const data = _.mapHistogram(storage.data, functionPoints);
+    let data = null;
+    if (isCurve === true) {
+      data = _.mapHistogramC(storage.data, curvePoints);
+    } else {
+      data = _.mapHistogramL(storage.data, linePoints);
+    }
+
     const tmpHistogram = _.getHistogram(data, step);
 
     GlobalExp2.setColorData(data, 'jpeg');
 
-    _.drawHistogramOnCanvas(tmpHistogram, context.hcontext);
+    _.drawHistogramOnCanvas(tmpHistogram, context.histogramContext);
   };
 
   histogramBtn.addEventListener('click', () => {
-    storage = GlobalExp2.getColorData();
-
     step = stepInput.value || 256;
 
     const histogramData = _.getHistogram(storage.data, step);
 
-    _.drawHistogramOnCanvas(histogramData, context.hcontext);
-    _.drawFunctionPointsOnCanvas(functionPoints, context.ccontext);
+    _.drawHistogramOnCanvas(histogramData, context.histogramContext);
+    _.drawlinePointsOnCanvas(linePoints, context.adjustContext);
   });
 
   curveCanvas.addEventListener('mousedown', (e) => {
@@ -191,13 +223,24 @@ export default function histogram() {
 
     const { layerX, layerY, button } = e;
     const functionPoint = [layerX, layerY];
-    const index = _.getClosestPoint(functionPoint, functionPoints);
+
+    if (isCurve === true) {
+      curvePoints[1] = functionPoint;
+      lastPos = functionPoint;
+      movePointIndex = 1;
+      canMove = true;
+
+      _.drawCurvePointsOnCanvas(curvePoints, context.adjustContext);
+      return;
+    }
+
+    const index = _.getClosestPoint(functionPoint, linePoints);
 
     if (index === -1 && button === 0) { // add new point
-      for (let i = 0, j = functionPoints.length; i < j; i += 1) {
-        if (functionPoint[0] < functionPoints[i][0]) {
+      for (let i = 0, j = linePoints.length; i < j; i += 1) {
+        if (functionPoint[0] < linePoints[i][0]) {
           if (pointCount <= MAXPOINT) {
-            functionPoints.splice(i, 0, functionPoint);
+            linePoints.splice(i, 0, functionPoint);
             movePointIndex = i;
             pointCount += 1;
             lastPos = functionPoint;
@@ -207,17 +250,17 @@ export default function histogram() {
         }
       }
 
-      _.drawFunctionPointsOnCanvas(functionPoints, context.ccontext);
+      _.drawlinePointsOnCanvas(linePoints, context.adjustContext);
     } else if (index !== -1 && button === 2) { // delete old point
-      for (let i = 0, j = functionPoints.length; i < j; i += 1) {
-        if (functionPoint[0] < functionPoints[i][0]) {
-          functionPoints.splice(i - 1, 1);
+      for (let i = 0, j = linePoints.length; i < j; i += 1) {
+        if (functionPoint[0] < linePoints[i][0]) {
+          linePoints.splice(i - 1, 1);
           pointCount -= 1;
           break;
         }
       }
 
-      _.drawFunctionPointsOnCanvas(functionPoints, context.ccontext);
+      _.drawlinePointsOnCanvas(linePoints, context.adjustContext);
       updateImage();
     } else if (index !== -1) { // move point
       lastPos = functionPoint;
@@ -238,12 +281,17 @@ export default function histogram() {
       const deltaY = lastPos[1] - functionPoint[1];
       const x = lastPos[0] - deltaX;
       const y = lastPos[1] - deltaY;
-      const rBorder = functionPoints[movePointIndex + 1][0];
-      const lBorder = functionPoints[movePointIndex - 1][0];
+      const rBorder = linePoints[movePointIndex + 1][0];
+      const lBorder = linePoints[movePointIndex - 1][0];
 
       if (x < rBorder && x > lBorder) {
-        functionPoints[movePointIndex] = [x, y];
-        _.drawFunctionPointsOnCanvas(functionPoints, context.ccontext);
+        if (isCurve === false) {
+          linePoints[movePointIndex] = [x, y];
+          _.drawlinePointsOnCanvas(linePoints, context.adjustContext);
+        } else {
+          curvePoints[1] = [x, y];
+          _.drawCurvePointsOnCanvas(curvePoints, context.adjustContext);
+        }
       }
     }
   });
@@ -272,6 +320,18 @@ export default function histogram() {
 
   curveCanvas.addEventListener('contextmenu', (e) => {
     e.preventDefault();
+  });
+
+  transBtn.addEventListener('click', () => {
+    isCurve = !isCurve;
+
+    if (isCurve === true) {
+      _.drawCurvePointsOnCanvas(curvePoints, context.adjustContext);
+    } else {
+      _.drawlinePointsOnCanvas(linePoints, context.adjustContext);
+    }
+
+    updateImage();
   });
 
   return update;

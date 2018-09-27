@@ -12,6 +12,7 @@ const GlobalExp2 = {
     logger.info('[G] init all events listener [√]');
 
     this.imgBox = document.getElementById('imgBox2');
+    this.monitorList = [m1];
     this.storage = {
       data: null,
       width: null,
@@ -34,11 +35,11 @@ const GlobalExp2 = {
     const tffCanvas = imageManager.convertArrayToCanvas(array, width, height);
     const base64 = imageManager.convertCanvasToBase64(tffCanvas, 'jpeg');
 
-    logger.info('[G] transform data into base64 [√]');
+    // logger.info('[G] transform data into base64 [√]');
 
     this.imgBox.setAttribute('src', base64);
 
-    logger.info('[G] update DOM [√]');
+    // logger.info('[G] update DOM [√]');
   },
 
   update() {

@@ -127,7 +127,7 @@ const _ = {
 
     for (let x = 0; x < CANVASW; x += 1) {
       const y = curveFunction(x);
-      this.drawPixel(x, 256 - y, context);
+      context.fillRect(x, CANVASH - y, 1, 1);
     }
 
     context.closePath();
@@ -137,10 +137,6 @@ const _ = {
 
   clear(context) {
     context.clearRect(0, 0, CANVASW, CANVASH);
-  },
-
-  drawPixel(x, y, context) {
-    context.fillRect(x, y, 1, 1);
   },
 
   drawLine(x1, y1, x2, y2, context) {
@@ -178,10 +174,46 @@ const _ = {
 
     return index;
   },
+
+  equalization(histogramData, amount, step) {
+    const probability = histogramData.map(value => value / amount);
+    const probabilityAccu = [];
+
+    probabilityAccu.push(probability[0]);
+    probability.reduce((accu, current) => {
+      const val = accu + current;
+
+      probabilityAccu.push(val);
+
+      return val;
+    });
+
+    console.log(probabilityAccu);
+
+    const lut = probabilityAccu.map((value) => {
+      let val = 0;
+
+      for (let i = 1; i <= step - 1; i += 1) {
+        const right = i / (step - 1);
+        console.log(value, right);
+        if (value < right) {
+          const left = i === 1 ? 1 : (i - 1) / (step - 1);
+          // console.log(left, right, value);
+          val = right - value >= value - left ? left : right;
+          break;
+        }
+      }
+
+      return val;
+    });
+
+    return lut;
+  },
 };
 
 export default function histogram() {
   const histogramCanvas = document.getElementById('histogramCanvas');
+  const equalization = document.getElementById('equalization');
   const curveCanvas = document.getElementById('curveCanvas');
   const histogramBtn = document.getElementById('histogram');
   const stepInput = document.getElementById('step');
@@ -195,6 +227,7 @@ export default function histogram() {
   let canMove = false;
   let isCurve = false;
   let step = -1;
+  let currentHistogram = null;
 
   let linePoints = [[0, CANVASH], [CANVASW, 0]];
   let curvePoints = [[0, CANVASH], [CANVASW / 2, CANVASH / 2 + 20], [CANVASW, 0]];
@@ -211,12 +244,18 @@ export default function histogram() {
       data = _.mapHistogramL(storage.data, linePoints);
     }
 
-    const tmpHistogram = _.getHistogram(data, step);
+    currentHistogram = _.getHistogram(data, step);
 
     GlobalExp2.setColorData(data, 'jpeg');
 
-    _.drawHistogramOnCanvas(tmpHistogram, context.histogramContext);
+    _.drawHistogramOnCanvas(currentHistogram, context.histogramContext);
   };
+
+  equalization.addEventListener('click', () => {
+    // const equalData = _.equalization(currentHistogram);
+
+    console.log(_.equalization([790, 1023, 850, 656, 329, 245, 122, 81], 4096, 8));
+  });
 
   histogramBtn.addEventListener('click', () => {
     step = stepInput.value || 256;

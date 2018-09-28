@@ -1,5 +1,6 @@
 import imageDisplay from './imageDisplay';
 import histogram from './histogram';
+import histogram2 from './histogram2';
 
 import imageManager from './api/imageManager';
 import logger from '../utils/logger';
@@ -7,7 +8,7 @@ import logger from '../utils/logger';
 const GlobalExp2 = {
   init() {
     imageDisplay();
-    const m1 = histogram();
+    const m1 = histogram2();
 
     logger.info('[G] init all events listener [√]');
 

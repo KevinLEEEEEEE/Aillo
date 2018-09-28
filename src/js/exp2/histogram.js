@@ -76,6 +76,11 @@ const _ = {
     return data.map(value => curveFunction(value));
   },
 
+
+  mapHistogramE(data, lut) {
+    return data.map(val => lut[val]);
+  },
+
   drawHistogramOnCanvas(data, context) {
     const step = data.length;
     const max = Math.round(Math.max(...data) / 0.8);
@@ -188,18 +193,15 @@ const _ = {
       return val;
     });
 
-    console.log(probabilityAccu);
-
     const lut = probabilityAccu.map((value) => {
       let val = 0;
 
-      for (let i = 1; i <= step - 1; i += 1) {
-        const right = i / (step - 1);
-        console.log(value, right);
-        if (value < right) {
+      for (let i = 1; i <= step; i += 1) {
+        const right = i === step ? 1 : i / (step - 1);
+
+        if (value <= right) {
           const left = i === 1 ? 1 : (i - 1) / (step - 1);
-          // console.log(left, right, value);
-          val = right - value >= value - left ? left : right;
+          val = right - value >= value - left ? i - 1 : i;
           break;
         }
       }
@@ -207,7 +209,38 @@ const _ = {
       return val;
     });
 
-    return lut;
+    const accuLut = {};
+
+    for (let i = 0; i < lut.length; i += 1) {
+      const target = lut[i];
+      for (let j = 0; j < lut.length; j += 1) {
+        if (target === lut[j]) {
+          if (!Reflect.has(accuLut, target)) {
+            accuLut[target] = new Set();
+          }
+
+          accuLut[target].add(j);
+        }
+      }
+    }
+
+    const accuHistogram = [];
+
+    for (let i = 0; i < step; i += 1) {
+      accuHistogram[i] = 0;
+    }
+
+    Object.keys(accuLut).forEach((value) => {
+      let accu = 0;
+
+      accuLut[value].forEach((val) => {
+        accu += histogramData[val];
+      });
+
+      accuHistogram[value] = accu;
+    });
+
+    return { accuHistogram, lut };
   },
 };
 
@@ -251,24 +284,37 @@ export default function histogram() {
     _.drawHistogramOnCanvas(currentHistogram, context.histogramContext);
   };
 
-  equalization.addEventListener('click', () => {
-    // const equalData = _.equalization(currentHistogram);
+  const reset = () => {
+    linePoints = [[0, CANVASH], [CANVASW, 0]];
+    curvePoints = [[0, CANVASH], [CANVASW / 2, CANVASH / 2 + 20], [CANVASW, 0]];
+    isCurve = false;
+    _.drawlinePointsOnCanvas(linePoints, context.adjustContext);
+  };
 
-    console.log(_.equalization([790, 1023, 850, 656, 329, 245, 122, 81], 4096, 8));
+  equalization.addEventListener('click', () => {
+    const equalData = _.equalization(currentHistogram, CANVASW * CANVASH, step);
+
+    currentHistogram = equalData.accuHistogram;
+
+    _.drawHistogramOnCanvas(currentHistogram, context.histogramContext);
+
+    storage.data = _.mapHistogramE(storage.data, equalData.lut);
+
+    GlobalExp2.setColorData(storage.data, 'jpeg');
+
+    reset();
   });
 
   histogramBtn.addEventListener('click', () => {
     step = stepInput.value || 256;
 
-    linePoints = [[0, CANVASH], [CANVASW, 0]];
-    curvePoints = [[0, CANVASH], [CANVASW / 2, CANVASH / 2 + 20], [CANVASW, 0]];
-
     GlobalExp2.setColorData(storage.data);
 
-    const histogramData = _.getHistogram(storage.data, step);
+    reset();
 
-    _.drawHistogramOnCanvas(histogramData, context.histogramContext);
-    _.drawlinePointsOnCanvas(linePoints, context.adjustContext);
+    currentHistogram = _.getHistogram(storage.data, step);
+
+    _.drawHistogramOnCanvas(currentHistogram, context.histogramContext);
   });
 
   curveCanvas.addEventListener('mousedown', (e) => {

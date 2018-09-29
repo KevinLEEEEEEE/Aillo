@@ -114,9 +114,13 @@ const prop = {
   // --------------------------------------------------------------
 
   addLinePoint(point, update) {
+    let cloestIndex = -1;
+
     for (let i = 0, j = this.linePoints.length; i < j; i += 1) {
       if (point[0] < this.linePoints[i][0]) {
         this.linePoints.splice(i, 0, point);
+        cloestIndex = i;
+        break;
       }
     }
 
@@ -125,18 +129,18 @@ const prop = {
       this.drawLine();
     }
 
-    return this;
+    return cloestIndex;
   },
 
   removeLinePoint(i, update) {
-    this.linePoints.splice(i, 1);
+    const movedPoint = this.linePoints.splice(i, 1);
 
     if (update === true) {
       this.empty();
       this.drawLine();
     }
 
-    return this;
+    return movedPoint;
   },
 
   moveLinePoint(i, point, update) {
@@ -159,6 +163,13 @@ const prop = {
     }
 
     return this;
+  },
+
+  isBorder(i, point, isCurve) {
+    const leftBorder = isCurve ? this.curvePoints[i - 1][0] : this.linePoints[i - 1][0];
+    const rightBorder = isCurve ? this.curvePoints[i + 1][0] : this.linePoints[i + 1][0];
+
+    return point[0] > leftBorder && point[0] < rightBorder;
   },
 
   // --------------------------------------------------------------

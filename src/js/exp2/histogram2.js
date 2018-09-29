@@ -2,7 +2,6 @@ import histogramController from './api/histogramController';
 import histogramManager from './api/histogramManager';
 import GlobalExp2 from './Global_exp2';
 
-const MAXSTEP = 256;
 const MAXPOINT = 5;
 const WIDTH = 256;
 const HEIGHT = 256;
@@ -56,15 +55,13 @@ const _ = {
   },
 
   updateHistogram(data, isCurve) {
-    let mappedData = null;
-
     if (isCurve === true) {
-      mappedData = this.myController.mapCurve(data);
+      this.mappedData = this.myController.mapCurve(data);
     } else {
-      mappedData = this.myController.mapLine(data);
+      this.mappedData = this.myController.mapLine(data);
     }
 
-    const histogramData = this.myHistogram.initHistogram(mappedData);
+    const histogramData = this.myHistogram.initHistogram(this.mappedData);
 
     this.myHistogram.drawHistogram(histogramData);
 
@@ -74,6 +71,8 @@ const _ = {
   // --------------------------------------------------------------
 
   updateImage() {
+    GlobalExp2.setColorData(this.mappedData, 'jpeg');
+
     return this;
   },
 };
@@ -124,30 +123,34 @@ export default function histogram() {
   transBtn.addEventListener('click', () => {
     isCurve = !isCurve;
 
-    _.updateController(isCurve);
+    _.updateController(isCurve)
+      .updateHistogram(storage.data, isCurve)
+      .updateImage();
   });
 
   controllerCanvas.addEventListener('mousedown', (e) => {
     const { layerX, layerY, button } = e;
-    const point = [layerX, layerY];
+    const pos = [layerX, layerY];
 
     if (isCurve === true) {
       movePointIndex = 1;
-      lastPos = point;
+      lastPos = pos;
       canMove = true;
 
-      myController.moveCurvePoint(movePointIndex, point, true);
+      myController.moveCurvePoint(movePointIndex, pos, true);
     } else {
-      const cloestIndex = myController.getClosestPoint(point);
+      const cloestIndex = myController.getClosestPoint(pos);
 
       if (button === 0 && cloestIndex === -1) { // add
         if (pointCount < MAXPOINT) {
-          myController.addLinePoint(point, true);
+          movePointIndex = myController.addLinePoint(pos, true);
           pointCount += 1;
+          lastPos = pos;
+          canMove = true;
         }
       } else if (button === 0 && cloestIndex !== -1) { // move
         movePointIndex = cloestIndex;
-        lastPos = point;
+        lastPos = pos;
         canMove = true;
       } else if (button === 2 && cloestIndex !== -1) { // remove
         myController.removeLinePoint(cloestIndex, true);
@@ -157,15 +160,34 @@ export default function histogram() {
   });
 
   controllerCanvas.addEventListener('mousemove', (e) => {
+    if (canMove === true && e.button === 0) {
+      const { layerX, layerY } = e;
+      const pos = [layerX, layerY];
+      const deltaX = lastPos[0] - pos[0];
+      const deltaY = lastPos[1] - pos[1];
+      const x = lastPos[0] - deltaX;
+      const y = lastPos[1] - deltaY;
 
+      if (myController.isBorder(movePointIndex, [x, y], isCurve) === true) {
+        if (isCurve === true) {
+          myController.moveCurvePoint(movePointIndex);
+        } else {
+          myController.moveLinePoint(movePointIndex, [x, y], true);
+        }
+      }
+    }
   });
 
   controllerCanvas.addEventListener('mouseup', () => {
-    _.updateHistogram(storage.data, isCurve);
+    canMove = false;
+    _.updateHistogram(storage.data, isCurve)
+      .updateImage();
   });
 
   controllerCanvas.addEventListener('mouseleave', () => {
-    // _.updateHistogram(isCurve);
+    canMove = false;
+    _.updateHistogram(storage.data, isCurve)
+      .updateImage();
   });
 
   controllerCanvas.addEventListener('contextmenu', (e) => {

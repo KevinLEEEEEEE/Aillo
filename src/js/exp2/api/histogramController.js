@@ -192,11 +192,16 @@ const prop = {
     return this;
   },
 
-  reset() {
+  reset(isCurve) {
     this.empty()
       .resetCurvePoints()
-      .resetLinePoints()
-      .drawLine();
+      .resetLinePoints();
+
+    if (isCurve === true) {
+      this.drawCurve();
+    } else {
+      this.drawLine();
+    }
 
     return this;
   },

@@ -62,31 +62,24 @@ const prop = {
 
   // --------------------------------------------------------------
 
-  equalization(histogram, amount, step) {
-    // const amount = this.width * this.height;
+  equalize(amount) {
+    const probAccu = [this.histogram[0]];
 
-    const probAccu = [histogram[0]];
-
-    histogram.reduce((accu, current, index) => {
+    this.histogram.reduce((accu, current) => {
       const val = accu + current;
 
-      probAccu[index] = val;
+      probAccu.push(val);
 
       return val;
     });
 
-    const lut = probAccu.map(value => Math.round(value / amount * (step - 1)));
-    const simplifiedLut = {};
+    const lut = probAccu.map(value => Math.round(value / amount * (this.step - 1)));
 
-    new Set(lut).forEach((value) => {
-      simplifiedLut[value] = [];
-    });
+    return lut;
+  },
 
-    lut.forEach((value, index) => {
-      simplifiedLut[value].push(index);
-    });
-
-    return simplifiedLut;
+  mapEqualize(data, lut) {
+    return data.map(value => lut[value]);
   },
 
   // --------------------------------------------------------------
@@ -107,8 +100,6 @@ export default function histogramManager(canvas, width, height) {
   myHistogram.height = height;
   myHistogram.step = MAXSTEP;
   myHistogram.histogram = [];
-
-  console.log(myHistogram.equalization([790, 1023, 850, 656, 329, 245, 122, 81], 4096, 8));
 
   return myHistogram.init();
 }

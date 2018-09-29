@@ -18,12 +18,16 @@ const _ = {
     this.stepInput = stepInput;
     this.myHistogram = myHistogram;
     this.myController = myController;
+
+    return this;
   },
 
   // --------------------------------------------------------------
 
-  resetController() {
-    this.myController.reset();
+  resetController(isCurve) {
+    this.myController.reset(isCurve);
+
+    return this;
   },
 
   updateController(isCurve) {
@@ -41,11 +45,15 @@ const _ = {
   changeToLine() {
     this.myController.empty()
       .drawLine();
+
+    return this;
   },
 
   changeToCurve() {
     this.myController.empty()
       .drawCurve();
+
+    return this;
   },
 
   // --------------------------------------------------------------
@@ -79,7 +87,7 @@ const _ = {
 
 export default function histogram() {
   const equalizationBtn = document.getElementById('equalization');
-  const histogramBtn = document.getElementById('histogram');
+  const reStepBtn = document.getElementById('reStep');
   const transBtn = document.getElementById('trans');
   const histogramCanvas = document.getElementById('histogramCanvas');
   const controllerCanvas = document.getElementById('curveCanvas');
@@ -90,7 +98,6 @@ export default function histogram() {
 
   _.init(myHistogram, myController, stepInput);
 
-
   let storage = null;
   let lastPos = [];
   let movePointIndex = -1;
@@ -98,26 +105,45 @@ export default function histogram() {
   let canMove = false;
   let isCurve = false;
 
-  const update = () => {
+  const update = () => { // reset histogram and controller adter image changing
     storage = GlobalExp2.getColorData();
 
     const step = stepInput.value || 256;
+
+    _.resetController(isCurve);
+
+    const data = myHistogram.setStep(step)
+      .initHistogram(storage.data);
+
+    myHistogram.drawHistogram(data);
+  };
+
+  equalizationBtn.addEventListener('click', () => {
+    const lut = myHistogram.equalize(storage.data.length);
+    const imageData = myHistogram.mapEqualize(storage.data, lut);
+
+    storage = {
+      data: imageData,
+      width: storage.width,
+      height: storage.height,
+    };
+
+    _.resetController(isCurve)
+      .updateHistogram(storage.data, isCurve)
+      .updateImage();
+  });
+
+  reStepBtn.addEventListener('click', () => {
+    const step = stepInput.value || 256;
+
+    _.resetController(isCurve);
 
     const data = myHistogram.setStep(step)
       .initHistogram(storage.data);
 
     myHistogram.drawHistogram(data);
 
-    _.resetController();
-  };
-
-  equalizationBtn.addEventListener('click', () => {
-
-  });
-
-  histogramBtn.addEventListener('click', () => {
-    _.resetController();
-    update();
+    GlobalExp2.setColorData(storage.data, 'jpeg');
   });
 
   transBtn.addEventListener('click', () => {
@@ -133,7 +159,7 @@ export default function histogram() {
     const pos = [layerX, layerY];
 
     if (isCurve === true) {
-      movePointIndex = 1;
+      movePointIndex = 1; // only one curve point permitted
       lastPos = pos;
       canMove = true;
 
@@ -141,7 +167,7 @@ export default function histogram() {
     } else {
       const cloestIndex = myController.getClosestPoint(pos);
 
-      if (button === 0 && cloestIndex === -1) { // add
+      if (button === 0 && cloestIndex === -1) { // add moveable point
         if (pointCount < MAXPOINT) {
           movePointIndex = myController.addLinePoint(pos, true);
           pointCount += 1;
@@ -170,7 +196,7 @@ export default function histogram() {
 
       if (myController.isBorder(movePointIndex, [x, y], isCurve) === true) {
         if (isCurve === true) {
-          myController.moveCurvePoint(movePointIndex);
+          myController.moveCurvePoint(movePointIndex, [x, y], true);
         } else {
           myController.moveLinePoint(movePointIndex, [x, y], true);
         }
@@ -191,6 +217,7 @@ export default function histogram() {
   });
 
   controllerCanvas.addEventListener('contextmenu', (e) => {
+    canMove = false;
     e.preventDefault();
   });
 

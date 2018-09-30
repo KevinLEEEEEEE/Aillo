@@ -3,7 +3,21 @@ import GlobalExp2 from './Global_exp2';
 import logger from '../utils/logger';
 
 const _ = {
+  isFit(target, data) {
 
+  },
+
+  resize() {
+
+  },
+
+  add(target, data) {
+
+  },
+
+  sub(target, data) {
+
+  },
 };
 
 export default function manipulation() {
@@ -12,8 +26,15 @@ export default function manipulation() {
   const addBtn = document.getElementById('add');
   const subBtn = document.getElementById('sub');
 
-  const storage = {
+  const localStorage = {
+    addImage: null,
+    subImage: null,
+  };
 
+  let storage = null;
+
+  const update = () => {
+    storage = GlobalExp2.getColorData();
   };
 
   addInput.addEventListener('change', (e) => {
@@ -24,7 +45,12 @@ export default function manipulation() {
 
     logger.info('add image setected');
 
-    // imageDAC.display(files[0]);
+    imageManager.convertFileToCanvas(files[0])
+      .then((canvas) => {
+        console.log(canvas);
+      });
+
+    // [localStorage.addImage] = files;
   });
 
   subInput.addEventListener('change', (e) => {
@@ -39,10 +65,20 @@ export default function manipulation() {
   });
 
   addBtn.addEventListener('click', () => {
+    if (localStorage.addImage === null || storage === null) {
+      return;
+    }
 
+    _.add(storage, localStorage.addImage);
   });
 
   subBtn.addEventListener('click', () => {
+    if (localStorage.subImage === null || storage === null) {
+      return;
+    }
 
+    _.sub(storage, localStorage.subImage);
   });
+
+  return update;
 }

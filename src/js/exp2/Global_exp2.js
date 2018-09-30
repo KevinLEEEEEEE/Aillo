@@ -1,6 +1,7 @@
 import imageDisplay from './imageDisplay';
 import histogram from './histogram';
 import histogram2 from './histogram2';
+import manipulation from './manipulation';
 
 import imageManager from './api/imageManager';
 import logger from '../utils/logger';
@@ -9,11 +10,12 @@ const GlobalExp2 = {
   init() {
     imageDisplay();
     const m1 = histogram2();
+    const m2 = manipulation();
 
     logger.info('[G] init all events listener [√]');
 
     this.imgBox = document.getElementById('imgBox2');
-    this.monitorList = [m1];
+    this.monitorList = [m1, m2];
     this.storage = {
       data: null,
       width: null,

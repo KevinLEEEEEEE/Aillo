@@ -19,6 +19,32 @@ const imageManager = {
     });
   },
 
+  convertFileToCanvas(file) {
+    return this.convertFileToBase64(file)
+      .then(base64 => new Promise((resolve, reject) => {
+        const image = new Image();
+
+        image.onload = () => {
+          const { width, height } = image;
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+
+          canvas.width = width;
+          canvas.height = height;
+
+          ctx.drawImage(image, 0, 0);
+
+          resolve(canvas);
+        };
+
+        image.onerror = (error) => {
+          reject(error);
+        };
+
+        image.src = base64;
+      }));
+  },
+
   convertImageToCanvas(image) {
     const canvas = document.createElement('canvas');
 

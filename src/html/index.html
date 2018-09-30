@@ -29,11 +29,22 @@
             </div>
             <div class="options">
               <span>step：</span>
-              <input type="text" name="step" id="step" placeholder="256">
+              <input type="text" id="step" placeholder="256">
               <button id="reStep">reStep</button>
               <button id="trans">trans</button>
               <button id="equalization">equalization</button>
               <p class="annotation">* 均衡化是一个不可逆操作，其结果将会叠加现有的线性/非线性调整 *</p>
+            </div>
+            <div class="options">
+              <div class="imageFusion">
+                <input type="file" id="addImage">
+                <button id="add">add</button>                
+              </div>
+              <div class="imageFusion">
+                <input type="file" id="subImage">
+                <button id="sub">sub</button>                
+              </div>
+              <p class="annotation">* 请选择文件用于图像融合和分离，图像将被拉伸以适配原文件大小 *</p>
             </div>
           </div>
       </div>

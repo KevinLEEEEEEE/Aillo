@@ -20,5 +20,15 @@
 
 #canvasContainer {
   position: relative;
-  height: 350px;
+  height: 250px;
+  margin-left: 30px;
+}
+
+.imageFusion {
+  margin-top: 10px;
+}
+
+#addImage, #subImage {
+  width: 270px;
+  overflow: hidden;
 }

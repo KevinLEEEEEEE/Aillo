@@ -119,6 +119,10 @@ export default function histogram() {
   };
 
   equalizationBtn.addEventListener('click', () => {
+    if (storage === null) {
+      return;
+    }
+
     const lut = myHistogram.equalize(storage.data.length);
     const imageData = myHistogram.mapEqualize(storage.data, lut);
 
@@ -134,6 +138,10 @@ export default function histogram() {
   });
 
   reStepBtn.addEventListener('click', () => {
+    if (storage === null) {
+      return;
+    }
+
     const step = stepInput.value || 256;
 
     _.resetController(isCurve);
@@ -147,6 +155,10 @@ export default function histogram() {
   });
 
   transBtn.addEventListener('click', () => {
+    if (storage === null) {
+      return;
+    }
+
     isCurve = !isCurve;
 
     _.updateController(isCurve)
@@ -155,6 +167,10 @@ export default function histogram() {
   });
 
   controllerCanvas.addEventListener('mousedown', (e) => {
+    if (storage === null) {
+      return;
+    }
+
     const { layerX, layerY, button } = e;
     const pos = [layerX, layerY];
 
@@ -186,6 +202,10 @@ export default function histogram() {
   });
 
   controllerCanvas.addEventListener('mousemove', (e) => {
+    if (storage === null) {
+      return;
+    }
+
     if (canMove === true && e.button === 0) {
       const { layerX, layerY } = e;
       const pos = [layerX, layerY];
@@ -205,12 +225,20 @@ export default function histogram() {
   });
 
   controllerCanvas.addEventListener('mouseup', () => {
+    if (storage === null) {
+      return;
+    }
+
     canMove = false;
     _.updateHistogram(storage.data, isCurve)
       .updateImage();
   });
 
   controllerCanvas.addEventListener('mouseleave', () => {
+    if (storage === null) {
+      return;
+    }
+
     canMove = false;
     _.updateHistogram(storage.data, isCurve)
       .updateImage();

@@ -1,3 +1,5 @@
+const Canvas = document.createElement('canvas');
+const Context = Canvas.getContext('2d');
 
 const imageManager = {
   convertFileToBase64(file) {
@@ -28,13 +30,10 @@ const imageManager = {
   },
 
   convertArrayToCanvas(array, width, height) {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
+    Canvas.width = width;
+    Canvas.height = height;
 
-    canvas.setAttribute('width', width);
-    canvas.setAttribute('height', height);
-
-    const imageData = ctx.getImageData(0, 0, width, height);
+    const imageData = Context.getImageData(0, 0, width, height);
 
     for (let i = 0, j = width * height; i < j; i += 1) {
       imageData.data[i * 4] = array[i];
@@ -43,9 +42,9 @@ const imageManager = {
       imageData.data[i * 4 + 3] = 255;
     }
 
-    ctx.putImageData(imageData, 0, 0);
+    Context.putImageData(imageData, 0, 0);
 
-    return canvas;
+    return Canvas;
   },
 
   convertCanvasToBase64(canvas, format) {

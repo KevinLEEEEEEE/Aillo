@@ -1,5 +1,4 @@
 import imageDisplay from './imageDisplay';
-import histogram from './histogram';
 import histogram2 from './histogram2';
 import manipulation from './manipulation';
 

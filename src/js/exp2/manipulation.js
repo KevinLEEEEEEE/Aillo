@@ -3,20 +3,68 @@ import GlobalExp2 from './Global_exp2';
 import logger from '../utils/logger';
 
 const _ = {
-  isFit(target, data) {
+  resize(target, input) {
+    const { width: targetWidth, height: targetHeight } = target;
+    const { width, height } = input;
+    const targetRatio = targetWidth / targetHeight;
+    const ratio = width / height;
+    let sx = 0;
+    let sy = 0;
+    let swidth = 0;
+    let sheight = 0;
 
+    if (targetRatio > ratio) {
+      const r = targetWidth / width;
+
+      swidth = width;
+      sheight = targetHeight / r;
+      sx = 0;
+      sy = (height - sheight) / 2;
+    } else {
+      const r = targetHeight / height;
+
+      swidth = targetWidth / r;
+      sheight = height;
+      sx = (width - swidth) / 2;
+      sy = 0;
+    }
+
+    return {
+      sx, sy, swidth, sheight,
+    };
   },
 
-  resize() {
+  cut(target, input, {
+    sx, sy, swidth, sheight,
+  }) {
+    const { width: targetWidth, height: targetHeight } = target;
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
 
+    canvas.width = targetWidth;
+    canvas.height = targetHeight;
+
+    ctx.drawImage(input, sx, sy, swidth, sheight, 0, 0, targetWidth, targetHeight);
+
+    return ctx.getImageData(0, 0, targetWidth, targetHeight);
   },
 
-  add(target, data) {
+  add(target, input) {
+    const resizedInput = this.resize(target, input);
+    const cutImageData = this.cut(target, input, resizedInput);
+    const decolorized = imageManager.decolorization(cutImageData);
+    const compressed = imageManager.compressImageData(decolorized);
 
+    return target.data.map((value, index) => value / 2 + compressed[index] / 2);
   },
 
-  sub(target, data) {
+  sub(target, input) {
+    const resizedInput = this.resize(target, input);
+    const cutImageData = this.cut(target, input, resizedInput);
+    const decolorized = imageManager.decolorization(cutImageData);
+    const compressed = imageManager.compressImageData(decolorized);
 
+    return target.data.map((value, index) => value * 2 - compressed[index]);
   },
 };
 
@@ -43,14 +91,13 @@ export default function manipulation() {
     const { target } = e;
     const { files } = target;
 
-    logger.info('add image setected');
+    imageManager.convertFileToBase64(files[0])
+      .then(base64 => imageManager.convertBase64ToImage(base64))
+      .then((image) => {
+        localStorage.addImage = image;
 
-    imageManager.convertFileToCanvas(files[0])
-      .then((canvas) => {
-        console.log(canvas);
+        logger.info('add image ready');
       });
-
-    // [localStorage.addImage] = files;
   });
 
   subInput.addEventListener('change', (e) => {
@@ -59,9 +106,13 @@ export default function manipulation() {
     const { target } = e;
     const { files } = target;
 
-    logger.info('add image setected');
+    imageManager.convertFileToBase64(files[0])
+      .then(base64 => imageManager.convertBase64ToImage(base64))
+      .then((image) => {
+        localStorage.subImage = image;
 
-    // imageDAC.display(files[0]);
+        logger.info('sub image ready');
+      });
   });
 
   addBtn.addEventListener('click', () => {
@@ -69,7 +120,13 @@ export default function manipulation() {
       return;
     }
 
-    _.add(storage, localStorage.addImage);
+    const added = _.add(storage, localStorage.addImage);
+
+    GlobalExp2.setColorData(added);
+
+    GlobalExp2.update();
+
+    localStorage.addImage = null;
   });
 
   subBtn.addEventListener('click', () => {
@@ -77,7 +134,13 @@ export default function manipulation() {
       return;
     }
 
-    _.sub(storage, localStorage.subImage);
+    const subed = _.sub(storage, localStorage.subImage);
+
+    GlobalExp2.setColorData(subed);
+
+    GlobalExp2.update();
+
+    localStorage.subImage = null;
   });
 
   return update;

@@ -2,7 +2,7 @@ import GlobalExp2 from './Global_exp2';
 
 const MAXSTEP = 256;
 const MAXPOINT = 5;
-const CANVASW = 256;
+const CANVASW = 512;
 const CANVASH = 256;
 const DISTANCE = 10;
 

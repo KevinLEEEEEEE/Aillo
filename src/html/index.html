@@ -11,6 +11,34 @@
       <h1>数 字 图 像 处 理</h1>
       <p>⊱ Digital Image Processing Assignment ⊰</p>
     </header>
+    <div id="exp3" class="exp">
+      <div class="title" id="titleExp3"></div>
+      <div class="expBox">
+        <div class="fileBox">
+          <label id="inputBox3" class="inputBox"><input type="file"></label>
+          <div id="inputHelper3" class="inputHelper">
+              <p>+</p>
+              <p>点击或拖动文件至此</p>
+          </div>
+          <!-- <div id="imgContainer3" class="imgContainer"><img id="imgBox3" class="imgBox"></div> -->
+          <div id="imgContainer3" class="imgContainer"><canvas id="imgBox3" class="imgBox"></canvas></div>
+        </div>
+        <div>
+          <div class="options">
+            <button id="average">average</button>
+            <button id="median">median</button>
+            <p class="annotation">* 1233 *</p>
+          </div>
+          <div class="options">
+            <button id="peppersalt">peppersalt</button>
+            <button id="gaussian">gaussian</button>
+            <p class="annotation">* 1233 *</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
     <div id="exp2" class="exp">
         <div class="title" id="titleExp2"></div>
         <div class="expBox">
@@ -30,19 +58,19 @@
             <div class="options">
               <span>step：</span>
               <input type="text" id="step" placeholder="256">
-              <button id="reStep">reStep</button>
-              <button id="trans">trans</button>
-              <button id="equalization">equalization</button>
+              <button id="reStep">reset steps</button>
+              <button id="trans">transform</button>
+              <button id="equalization">equalize</button>
               <p class="annotation">* 均衡化是一个不可逆操作，其结果将会叠加现有的线性/非线性调整 *</p>
             </div>
             <div class="options">
               <div class="imageFusion">
                 <input type="file" id="addImage">
-                <button id="add">add</button>                
+                <button id="add">add image</button>                
               </div>
               <div class="imageFusion">
                 <input type="file" id="subImage">
-                <button id="sub">sub</button>                
+                <button id="sub">sub image</button>                
               </div>
               <p class="annotation">* 请选择文件用于图像融合和分离，图像将被拉伸以适配原文件大小 *</p>
             </div>

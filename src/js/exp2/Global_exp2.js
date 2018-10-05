@@ -5,6 +5,8 @@ import manipulation from './manipulation';
 import imageManager from './api/imageManager';
 import logger from '../utils/logger';
 
+import histogram from '../../image/histogram.jpg';
+
 const GlobalExp2 = {
   init() {
     imageDisplay();
@@ -22,6 +24,11 @@ const GlobalExp2 = {
     };
 
     logger.info('[G] init Global storage [√]');
+
+    const img = new Image();
+    img.src = histogram;
+
+    document.getElementById('titleExp2').appendChild(img);
   },
 
   getColorData() {
@@ -39,7 +46,11 @@ const GlobalExp2 = {
 
     // logger.info('[G] transform data into base64 [√]');
 
-    this.imgBox.setAttribute('src', base64);
+    this.imgBox.onload = () => {
+      this.update();
+    };
+
+    this.imgBox.src = base64;
 
     // logger.info('[G] update DOM [√]');
   },

@@ -21,7 +21,7 @@
 #canvasContainer {
   position: relative;
   height: 250px;
-  margin-left: 30px;
+  margin: 0 0 20px 50px;
 }
 
 .imageFusion {
@@ -31,4 +31,8 @@
 #addImage, #subImage {
   width: 270px;
   overflow: hidden;
+}
+
+#titleExp2 img {
+  width: 950px;
 }

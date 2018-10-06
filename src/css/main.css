@@ -102,3 +102,11 @@ header p {
   z-index: -1;
   background-color: rgba(0, 0, 0, .07);
 }
+
+.options button {
+  margin-left: 5px;
+}
+
+.options input {
+  margin-right: 5px;
+}

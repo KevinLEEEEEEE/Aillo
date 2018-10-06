@@ -85,11 +85,17 @@ const filterManager = {
   median(imageData, template) {
     return this.filter(imageData, template, 'median');
   },
+
+  turnOdd(value) {
+    return Math.abs(value % 2 === 1 ? value : value - 1);
+  },
 };
 
 export default function filter() {
   const averageBtn = document.getElementById('average');
   const medianBtn = document.getElementById('median');
+  const averageInput = document.getElementById('averageTemp');
+  const medianInput = document.getElementById('medianTemp');
   const imageManager = imgManager();
   let storage = null;
 
@@ -100,13 +106,15 @@ export default function filter() {
   };
 
   averageBtn.addEventListener('click', () => {
-    const averageData = filterManager.average(storage.imageData, 9);
+    const temp = filterManager.turnOdd(averageInput.value || 3);
+    const averageData = filterManager.average(storage.imageData, temp);
 
     GlobalExp2plus.setImageData(averageData);
   });
 
   medianBtn.addEventListener('click', () => {
-    const medianData = filterManager.median(storage.imageData, 3);
+    const temp = filterManager.turnOdd(medianInput.value || 3);
+    const medianData = filterManager.median(storage.imageData, temp);
 
     GlobalExp2plus.setImageData(medianData);
   });

@@ -15,24 +15,48 @@
       <div class="title" id="titleExp3"></div>
       <div class="expBox">
         <div class="fileBox">
-          <label id="inputBox3" class="inputBox"><input type="file"></label>
+          <label id="inputBox3" class="inputBox">
+            <input type="file">
+          </label>
           <div id="inputHelper3" class="inputHelper">
               <p>+</p>
               <p>点击或拖动文件至此</p>
           </div>
-          <!-- <div id="imgContainer3" class="imgContainer"><img id="imgBox3" class="imgBox"></div> -->
-          <div id="imgContainer3" class="imgContainer"><canvas id="imgBox3" class="imgBox"></canvas></div>
+          <div id="imgContainer3" class="imgContainer">
+            <canvas id="imgBox3" class="imgBox">
+              Your broswer cannot support canvas!
+            </canvas>
+          </div>
         </div>
         <div>
           <div class="options">
+            <span>Template：</span>
+            <input type="text" id="averageTemp" class="numberInput" placeholder="3">
+            <span>px</span>
             <button id="average">average</button>
-            <button id="median">median</button>
-            <p class="annotation">* 1233 *</p>
           </div>
           <div class="options">
+            <span>Template：</span>
+            <input type="text" id="medianTemp" class="numberInput" placeholder="3">
+            <span>px</span>
+            <button id="median">median</button>
+            <p class="annotation">* 模板大小请输入奇数，偶数将-1，负数将取绝对值 *</p>
+          </div>
+          <div class="options">
+            <span>SNR：</span>
+            <input type="text" id="snr" class="numberInput" placeholder="0.9" min="0" max="1">
             <button id="peppersalt">peppersalt</button>
+          </div>
+          <div class="options">
+            <span>Mu：</span>
+            <input type="text" id="mu" class="numberInput" placeholder="0">
+            <span>Sigma：</span>
+            <input type="text" id="sigma" class="numberInput" placeholder="1">
+            <span>K：</span>
+            <input type="text" id="k" class="numberInput" placeholder="128">
             <button id="gaussian">gaussian</button>
-            <p class="annotation">* 1233 *</p>
+            <p class="annotation">* 可以调整椒盐和高斯噪声的系数 *</p>
+            <p class="annotation">* 效果的添加将叠加，而非始终对原图操作 *</p>
           </div>
         </div>
       </div>
@@ -58,6 +82,7 @@
             <div class="options">
               <span>step：</span>
               <input type="text" id="step" placeholder="256">
+              <span>px</span>
               <button id="reStep">reset steps</button>
               <button id="trans">transform</button>
               <button id="equalization">equalize</button>

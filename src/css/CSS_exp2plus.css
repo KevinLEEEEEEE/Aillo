@@ -1,0 +1,7 @@
+.numberInput {
+  width: 26px;
+  outline: none;
+  text-align: center;
+  border: none;
+  border-bottom: 1px black solid;
+}

@@ -81,6 +81,10 @@ const noiseManager = {
 export default function noise() {
   const peppersalt = document.getElementById('peppersalt');
   const gaussian = document.getElementById('gaussian');
+  const snrInput = document.getElementById('snr');
+  const muInput = document.getElementById('mu');
+  const sigmaInput = document.getElementById('sigma');
+  const kInput = document.getElementById('k');
   const imageManager = imgManager();
   let storage = null;
 
@@ -91,13 +95,17 @@ export default function noise() {
   };
 
   peppersalt.addEventListener('click', () => {
-    const peppersaltData = noiseManager.peppersalt(storage.imageData, 0.9);
+    const snr = snrInput.value || 0.9;
+    const peppersaltData = noiseManager.peppersalt(storage.imageData, snr);
 
     GlobalExp2plus.setImageData(peppersaltData);
   });
 
   gaussian.addEventListener('click', () => {
-    const gaussianData = noiseManager.gaussian(storage.imageData, 0, 1, 256);
+    const mu = muInput.value || 0;
+    const sigma = sigmaInput.value || 1;
+    const k = kInput.value || 128;
+    const gaussianData = noiseManager.gaussian(storage.imageData, mu, sigma, k);
 
     GlobalExp2plus.setImageData(gaussianData);
   });

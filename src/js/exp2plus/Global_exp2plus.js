@@ -6,6 +6,8 @@ import imageManager from './api/imageManager';
 import canvasManager from './api/canvasManager';
 import logger from '../utils/logger';
 
+import filterNoise from '../../image/filter&noise.jpg';
+
 const FSM = () => {
   const states = {
     free: 0,
@@ -65,6 +67,11 @@ const GlobalExp2plus = {
     this.imageManager = imageManager();
 
     logger.info('[G] init Global storage and stateMachine [√]');
+
+    const img = new Image();
+    img.src = filterNoise;
+
+    document.getElementById('titleExp2plus').appendChild(img);
   },
 
   // --------------------------------------------------------------

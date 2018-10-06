@@ -1,22 +1,9 @@
 
-const blankCvs = () => {
-  const blank = Object.create({
-    setSize(width, height) {
-      this.canvas.width = width;
-      this.canvas.height = height;
+const blankImageData = (defaultWidth, defaultHeight) => {
+  const cvs = document.createElement('canvas');
+  const ctx = cvs.getContext('2d');
 
-      return this;
-    },
-
-    getImageData() {
-      return this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
-    },
-  });
-
-  blank.canvas = document.createElement('canvas');
-  blank.ctx = blank.canvas.getContext('2d');
-
-  return blank;
+  return (width = defaultWidth, height = defaultHeight) => ctx.createImageData(width, height);
 };
 
 const prop = {
@@ -101,23 +88,23 @@ const prop = {
 
 
 export default function imageManager() {
-  const blank = blankCvs();
+  const blank = blankImageData(0, 0);
   const manager = Object.create(prop);
 
   manager.decolorize = (imageData) => {
     const { data, width, height } = imageData;
-    const blankImageData = blank.setSize(width, height).getImageData();
+    const blankData = blank(width, height);
 
     for (let i = 0, j = data.length; i < j; i += 4) {
       const grayLevel = (data[i] + data[i + 1] + data[i + 2]) / 3;
 
-      blankImageData.data[i] = grayLevel;
-      blankImageData.data[i + 1] = grayLevel;
-      blankImageData.data[i + 2] = grayLevel;
-      blankImageData.data[i + 3] = data[i + 3];
+      blankData.data[i] = grayLevel;
+      blankData.data[i + 1] = grayLevel;
+      blankData.data[i + 2] = grayLevel;
+      blankData.data[i + 3] = data[i + 3];
     }
 
-    return blankImageData;
+    return blankData;
   };
 
   return manager;

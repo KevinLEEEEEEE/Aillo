@@ -1,26 +1,12 @@
-import imgManager from './api/imageManager';
 import logger from '../utils/logger';
 import GlobalExp2plus from './Global_exp2plus';
 
-const blankCvs = (() => {
-  const blank = Object.create({
-    setSize(width, height) {
-      this.canvas.width = width;
-      this.canvas.height = height;
+const blankImageData = ((defaultWidth, defaultHeight) => {
+  const cvs = document.createElement('canvas');
+  const ctx = cvs.getContext('2d');
 
-      return this;
-    },
-
-    getImageData() {
-      return this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
-    },
-  });
-
-  blank.canvas = document.createElement('canvas');
-  blank.ctx = blank.canvas.getContext('2d');
-
-  return blank;
-})();
+  return (width = defaultWidth, height = defaultHeight) => ctx.createImageData(width, height);
+})(0, 0);
 
 const filterManager = {
   pos(index, w) {
@@ -33,9 +19,7 @@ const filterManager = {
   filter(imageData, template, type) {
     const { data, width, height } = imageData;
 
-    blankCvs.setSize(width, height);
-
-    const blankData = blankCvs.getImageData();
+    const blankData = blankImageData(width, height);
 
     for (let i = 0, j = data.length / 4; i < j; i += 1) {
       const { x: tx, y: ty } = this.pos(i, width);
@@ -48,7 +32,7 @@ const filterManager = {
           const cx = tx + n;
           const cy = ty + m;
 
-          if (!(cx < 0 || cx >= width || cy < 0 || cy >= height)) {
+          if (cx >= 0 && cx < width && cy >= 0 && cy < height) {
             const index = cy * width + cx;
             const value = data[index * 4];
 
@@ -96,11 +80,10 @@ export default function filter() {
   const medianBtn = document.getElementById('median');
   const averageInput = document.getElementById('averageTemp');
   const medianInput = document.getElementById('medianTemp');
-  const imageManager = imgManager();
   let storage = null;
 
   const update = (data) => {
-    storage = { imageData: imageManager.decolorize(data.imageData) };
+    storage = { imageData: data.decolorized };
 
     logger.info('filter local storage update [√]');
   };
@@ -109,14 +92,14 @@ export default function filter() {
     const temp = filterManager.turnOdd(averageInput.value || 3);
     const averageData = filterManager.average(storage.imageData, temp);
 
-    GlobalExp2plus.setImageData(averageData);
+    GlobalExp2plus.setImageData(averageData, averageData);
   });
 
   medianBtn.addEventListener('click', () => {
     const temp = filterManager.turnOdd(medianInput.value || 3);
     const medianData = filterManager.median(storage.imageData, temp);
 
-    GlobalExp2plus.setImageData(medianData);
+    GlobalExp2plus.setImageData(medianData, medianData);
   });
 
   return update;

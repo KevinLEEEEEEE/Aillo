@@ -1,4 +1,3 @@
-import imgManager from './api/imageManager';
 import logger from '../utils/logger';
 import GlobalExp2plus from './Global_exp2plus';
 
@@ -35,25 +34,25 @@ const noiseManager = {
     return imageData;
   },
 
+  distribution() {
+    let u = 0;
+    let v = 0;
+    let w = 0;
+    let c = 0;
+
+    do {
+      u = Math.random() * 2 - 1.0;
+      v = Math.random() * 2 - 1.0;
+      w = u * u + v * v;
+    } while (w === 0.0 || w >= 1.0);
+
+    c = Math.sqrt((-2 * Math.log(w)) / w);
+
+    return u * c;
+  },
+
   gaussianGenerator(mu, sigma) {
-    const distribution = () => {
-      let u = 0;
-      let v = 0;
-      let w = 0;
-      let c = 0;
-
-      do {
-        u = Math.random() * 2 - 1.0;
-        v = Math.random() * 2 - 1.0;
-        w = u * u + v * v;
-      } while (w === 0.0 || w >= 1.0);
-
-      c = Math.sqrt((-2 * Math.log(w)) / w);
-
-      return u * c;
-    };
-
-    return mu + sigma * distribution();
+    return mu + sigma * this.distribution();
   },
 
   gaussian(imageData, mu, sigma, k) {
@@ -85,11 +84,10 @@ export default function noise() {
   const muInput = document.getElementById('mu');
   const sigmaInput = document.getElementById('sigma');
   const kInput = document.getElementById('k');
-  const imageManager = imgManager();
   let storage = null;
 
   const update = (data) => {
-    storage = { imageData: imageManager.decolorize(data.imageData) };
+    storage = { imageData: data.decolorized };
 
     logger.info('filter local storage update [√]');
   };
@@ -98,7 +96,7 @@ export default function noise() {
     const snr = snrInput.value || 0.9;
     const peppersaltData = noiseManager.peppersalt(storage.imageData, snr);
 
-    GlobalExp2plus.setImageData(peppersaltData);
+    GlobalExp2plus.setImageData(peppersaltData, peppersalt);
   });
 
   gaussian.addEventListener('click', () => {
@@ -107,7 +105,7 @@ export default function noise() {
     const k = kInput.value || 128;
     const gaussianData = noiseManager.gaussian(storage.imageData, mu, sigma, k);
 
-    GlobalExp2plus.setImageData(gaussianData);
+    GlobalExp2plus.setImageData(gaussianData, gaussian);
   });
 
   return update;

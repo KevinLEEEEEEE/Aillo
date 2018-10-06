@@ -58,13 +58,18 @@ const GlobalExp2plus = {
     logger.info('[G] init all events listener [√]');
 
     this.fsm = FSM();
-    this.storage = { imageData: null };
+    this.storage = {
+      imageData: null,
+      decolorized: null,
+    };
     this.imageManager = imageManager();
 
     logger.info('[G] init Global storage and stateMachine [√]');
   },
 
-  setImageData(imageData) {
+  // --------------------------------------------------------------
+
+  setImageData(imageData, decolorized) {
     if (!this.fsm.isFree()) {
       return;
     }
@@ -72,7 +77,7 @@ const GlobalExp2plus = {
     this.fsm.wait();
 
     this.imgBox.setImageData(imageData).adjustToParent();
-    this.update(imageData);
+    this.update(imageData, decolorized);
 
     this.fsm.free();
   },
@@ -86,16 +91,17 @@ const GlobalExp2plus = {
 
     this.imageManager.convertBase64ToImage(base64)
       .then((image) => {
-        this.imgBox.drawImage(image).adjustToParent();
-        this.update();
+        const imageData = this.imgBox.drawImage(image)
+          .adjustToParent()
+          .getImageData();
+
+        this.update(imageData, null);
 
         this.fsm.free();
       });
   },
 
-  normalizeData(imageData) {
-    return imageData === undefined ? this.imgBox.getImageData() : imageData;
-  },
+  // --------------------------------------------------------------
 
   notify() {
     this.monitorList.forEach((target) => {
@@ -103,10 +109,9 @@ const GlobalExp2plus = {
     });
   },
 
-  update(imageData) {
-    const data = this.normalizeData(imageData);
-
-    this.storage.imageData = data;
+  update(imageData, decolorized) {
+    this.storage.imageData = imageData || null;
+    this.storage.decolorized = decolorized || this.imageManager.decolorize(imageData);
 
     logger.info('[G] Global storage update [√]');
 

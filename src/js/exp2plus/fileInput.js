@@ -22,8 +22,12 @@ export default function fileInput(index) {
   const exp = document.getElementById(`exp${index}`);
   const imgInput = exp.getElementsByTagName('input')[0];
   const inputHelper = document.getElementById(`inputHelper${index}`);
+  const restoreBtn = document.getElementById(`restore${index}`);
+  const storage = {
+    file: null,
+  };
 
-  const update = (storage) => {
+  const update = () => {
   };
 
   imgInput.addEventListener('change', (e) => {
@@ -32,6 +36,8 @@ export default function fileInput(index) {
     logger.info('file changed by selecting.');
 
     _.display(files[0]).hideHelper(inputHelper);
+
+    [storage.file] = files;
   });
 
   inputBox.addEventListener('dragover', (e) => {
@@ -48,6 +54,14 @@ export default function fileInput(index) {
     logger.info('file changed by dragging.');
 
     _.display(file).hideHelper(inputHelper);
+
+    storage.file = file;
+  });
+
+  restoreBtn.addEventListener('click', () => {
+    if (storage !== null) {
+      _.display(storage.file);
+    }
   });
 
   return update;

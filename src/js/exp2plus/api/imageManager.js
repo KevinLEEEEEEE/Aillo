@@ -1,11 +1,4 @@
 
-const blankImageData = (defaultWidth, defaultHeight) => {
-  const cvs = document.createElement('canvas');
-  const ctx = cvs.getContext('2d');
-
-  return (width = defaultWidth, height = defaultHeight) => ctx.createImageData(width, height);
-};
-
 const prop = {
   convertFileToBase64(file) {
     return new Promise((resolve, reject) => {
@@ -84,27 +77,39 @@ const prop = {
     return this.convertBase64ToImage(base64)
       .then(image => this.convertImageToCanvas(image));
   },
+
+  // --------------------------------------------------------------
+
+  assembleImageData(pixelData, width, height) {
+    if (typeof window === 'object') {
+      return new window.ImageData(pixelData, width, height);
+    }
+    return { data: pixelData, width, height };
+  },
+
+  assemblePixelData(length) {
+    return new Uint8ClampedArray(length);
+  },
 };
 
 
 export default function imageManager() {
-  const blank = blankImageData(0, 0);
   const manager = Object.create(prop);
 
   manager.decolorize = (imageData) => {
     const { data, width, height } = imageData;
-    const blankData = blank(width, height);
+    const pixelData = manager.assemblePixelData(data.length);
 
     for (let i = 0, j = data.length; i < j; i += 4) {
       const grayLevel = (data[i] + data[i + 1] + data[i + 2]) / 3;
 
-      blankData.data[i] = grayLevel;
-      blankData.data[i + 1] = grayLevel;
-      blankData.data[i + 2] = grayLevel;
-      blankData.data[i + 3] = data[i + 3];
+      pixelData[i] = grayLevel;
+      pixelData[i + 1] = grayLevel;
+      pixelData[i + 2] = grayLevel;
+      pixelData[i + 3] = data[i + 3];
     }
 
-    return blankData;
+    return manager.assembleImageData(pixelData, width, height);
   };
 
   return manager;

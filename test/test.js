@@ -1,7 +1,9 @@
+import myCanvas from '../src/js/myCanvas/myCanvas';
+
 const Nightmare = require('nightmare');
 const assert = require('assert');
 
-describe('imageDisplayAndConvert', () => {
+describe('myCanvas', () => {
   describe('imageDisplay', () => {
     it('unable to click when started', () => {
       const nightmare = Nightmare({ show: true });

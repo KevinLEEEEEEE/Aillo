@@ -167,22 +167,26 @@ const prop = {
 
   // --------------------------------------------------------------
 
-  putImage(image) {
+  putImage(image, isRecord = true) {
     const { width, height } = image;
 
     this.setSize(width, height).context.drawImage(image);
 
-    this.goForward().update();
+    if (isRecord === true) this.do();
+
+    this.update();
 
     return this;
   },
 
-  putImageData(imageData) {
+  putImageData(imageData, isRecord = true) {
     const { width, height } = imageData;
 
     this.setSize(width, height).context.putImageData(imageData, 0, 0);
 
-    this.goForward().update();
+    if (isRecord === true) this.do();
+
+    this.update();
 
     return this;
   },
@@ -207,21 +211,26 @@ const prop = {
 
   // --------------------------------------------------------------
 
-  goForward() {
+  do() { // recoed the step as the latest one
     const imageData = this.getImageData();
 
-    this.history.stepForward(imageData);
+    this.history.do(imageData);
 
     return this;
   },
 
-  revoke() {
-    const imageData = this.history.stepBack();
-    const { width, height } = imageData;
+  undo() { // go back to the previous result
+    const imageData = this.history.undo();
 
-    this.setSize(width, height).context.putImageData(imageData, 0, 0);
+    this.putImageData(imageData, false);
 
-    this.update();
+    return this;
+  },
+
+  redo() { // undo the 'undo' precess
+    const imageData = this.history.redo();
+
+    this.putImageData(imageData, true);
 
     return this;
   },

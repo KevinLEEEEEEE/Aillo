@@ -1,21 +1,44 @@
 
 const prop = {
-  stepForward(imageData) {
-    const index = (this.currentStep + 1) % this.maxStep;
+  redo() {
+    const gap = this.maxStep - this.history.length;
 
-    this.history[index] = imageData;
+    this.undoChance = this.undoChance - gap + 1;
+    this.redo -= 1;
+  },
+
+  undo() {
+    // const index = this.currentStep % this.maxStep;
+
+    const gap = this.maxStep - this.history.length;
+
+    this.undoChance = this.undoChance - gap - 1;
+    this.redo += 1;
+
+    // return this.history[index];
+  },
+
+  do(imageData) {
+    // const index = this.currentStep % this.maxStep;
+
+    // this.history[index] = imageData;
+    const gap = this.maxStep - this.history.length;
 
     this.currentStep += 1;
+    this.undoChance = this.undoChance - gap - this.redoChance + 1;
+    this.redoChance = 0;
 
     return this;
   },
 
-  stepBack() {
-    const index = (this.currentStep + 1) % this.maxStep;
+  canRedo() {
+    return this.redoChance > 0;
+  },
 
-    this.currentStep -= 1;
+  canUndo() {
+    const gap = this.maxStep - this.history.length;
 
-    return this.history[index];
+    return this.undoChance - gap > 0;
   },
 };
 
@@ -25,6 +48,8 @@ export default function history(maxStep) {
   myHistory.history = [];
   myHistory.maxStep = maxStep;
   myHistory.currentStep = -1;
+  myHistory.undoChance = 5;
+  myHistory.redoChance = 0;
 
   return myHistory;
 }

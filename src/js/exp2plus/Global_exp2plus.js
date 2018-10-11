@@ -54,8 +54,6 @@ const GlobalExp2plus = {
     const m2 = filter();
     const m3 = noise(index);
 
-    console.log(imgBox);
-
     this.monitorList = [m1, m2, m3];
     // this.imgBox = canvasManager(imgBox);
 

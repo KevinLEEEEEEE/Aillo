@@ -1,32 +1,37 @@
 
 const prop = {
   redo() {
-    const gap = this.maxStep - this.history.length;
+    if (!this.canRedo()) {
+      throw new Error('cannot redo anymore');
+    }
 
-    this.undoChance = this.undoChance - gap + 1;
-    this.redo -= 1;
+    this.currentStep += 1;
+    this.undoChance += 1;
+    this.redoChance -= 1;
+
+    return this.history[this.currentStep % this.maxStep];
   },
 
   undo() {
-    // const index = this.currentStep % this.maxStep;
+    if (!this.canUndo()) {
+      throw new Error('cannot undo anymore');
+    }
 
-    const gap = this.maxStep - this.history.length;
+    this.currentStep -= 1;
+    this.undoChance -= 1;
+    this.redoChance += 1;
 
-    this.undoChance = this.undoChance - gap - 1;
-    this.redo += 1;
-
-    // return this.history[index];
+    return this.history[(this.currentStep + 1) % this.maxStep];
   },
 
   do(imageData) {
-    // const index = this.currentStep % this.maxStep;
-
-    // this.history[index] = imageData;
     const gap = this.maxStep - this.history.length;
 
     this.currentStep += 1;
-    this.undoChance = this.undoChance - gap - this.redoChance + 1;
+    this.undoChance = this.maxStep - gap - this.redoChance - 1;
     this.redoChance = 0;
+
+    this.history[this.currentStep % this.maxStep] = imageData;
 
     return this;
   },
@@ -38,7 +43,7 @@ const prop = {
   canUndo() {
     const gap = this.maxStep - this.history.length;
 
-    return this.undoChance - gap > 0;
+    return this.maxStep - gap - this.redoChance - 1 > 0;
   },
 };
 

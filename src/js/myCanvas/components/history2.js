@@ -47,7 +47,7 @@ const prop = {
   },
 };
 
-export default function history(maxStep) {
+export default function history(maxStep = 5) {
   const myHistory = Object.create(prop, {
     currentIndex: {
       get() {

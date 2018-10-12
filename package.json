@@ -7,6 +7,8 @@
     "lodash": "^4.17.10"
   },
   "devDependencies": {
+    "@babel/preset-stage-2": "^7.0.0",
+    "@babel/preset-stage-3": "^7.0.0",
     "babel-core": "^6.26.3",
     "babel-eslint": "^9.0.0",
     "babel-loader": "^7.1.2",

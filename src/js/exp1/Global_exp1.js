@@ -6,8 +6,6 @@ import walahHadamardTrans from './walahHadamardTrans';
 import imageManager from './api/imageManager';
 import logger from '../utils/logger';
 
-import fourierImg from '../../image/fourier.jpg';
-
 const GlobalExp1 = {
   init() {
     imageDisplayAndConvert();
@@ -26,11 +24,6 @@ const GlobalExp1 = {
     };
 
     logger.info('[G] init Global storage [√]');
-
-    const img = new Image();
-    img.src = fourierImg;
-
-    document.getElementById('titleExp1').appendChild(img);
   },
 
   getColorData() {

@@ -1,15 +1,51 @@
-import canvasManager from './components/canvasManager';
+// import canvasManager from './components/canvasManager';
+import canvasManager from './components/canvasManager2';
 import history from './components/history3';
 
 export default function myCanvas2d(canvas, maxStep = 5) {
-  const cvs = Object.create(canvasManager);
-  const cvsHistory = history(maxStep);
+  const context = canvas.getContext('2d');
+  const that = canvasManager(canvas);
+  const myHistory = history(maxStep);
 
-  cvs.canvas = canvas;
-  cvs.context = canvas.getContext('2d');
-  cvs.do = () => {
+  Object.assign(that, {
+    do() {
 
-  };
+    },
 
-  return cvs;
+    undo() {
+
+    },
+
+    redo() {
+
+    },
+
+    putImage(image) {
+      const { width, height } = image;
+
+      this.setSize(width, height);
+      context.drawImage(image);
+
+      return this;
+    },
+
+    putImageData(imageData) {
+      const { width, height } = imageData;
+
+      this.setSize(width, height);
+      context.putImageData(imageData, 0, 0);
+
+      return this;
+    },
+
+    empty() {
+      const { width, height } = this.getSize();
+
+      context.clearRect(0, 0, width, height);
+
+      return this;
+    },
+  });
+
+  return that;
 }

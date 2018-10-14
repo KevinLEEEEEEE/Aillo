@@ -18,14 +18,14 @@ module.exports = {
     new HtmlWebpackPlugin({
       filename: 'index.html',
       title: 'mainPage',
-      template: './src/html/index.html',
+      template: './index.html',
       minify: true,
       inject: 'body',
     }),
     new webpack.HotModuleReplacementPlugin(),
   ],
   output: {
-    filename: 'assets/[name].bundle.js',
+    filename: 'assets/js/[name].bundle.js',
     path: path.resolve(__dirname, 'dist'),
   },
   module: {
@@ -41,6 +41,12 @@ module.exports = {
         }],
       },
       {
+        test: /\.html$/,
+        use: {
+          loader: 'html-loader',
+        },
+      },
+      {
         test: /\.css$/,
         use: [
           'style-loader',
@@ -48,15 +54,22 @@ module.exports = {
         ],
       },
       {
-        test: /\.(png|svg|jpg|jpeg|gif)$/,
-        use: [
-          'file-loader',
-        ],
+        test: /\.(png|svg|jpg|gif)$/,
+        use: [{
+          loader: 'file-loader',
+          options: {
+            name: 'assets/img/[name]-[hash:6].[ext]',
+          },
+        }],
       },
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/,
-        use: [
-          'file-loader',
+        use: [{
+          loader: 'file-loader',
+          options: {
+            name: 'assets/fonts/[name]-[hash:6].[ext]',
+          },
+        },
         ],
       },
       {

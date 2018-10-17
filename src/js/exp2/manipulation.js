@@ -124,7 +124,8 @@ export default function manipulation() {
 
     GlobalExp2.setColorData(added);
 
-    // GlobalExp2.update();
+    GlobalExp2.update();
+    GlobalExp2.notify();
 
     localStorage.addImage = null;
   });
@@ -138,7 +139,8 @@ export default function manipulation() {
 
     GlobalExp2.setColorData(subed);
 
-    // GlobalExp2.update();
+    GlobalExp2.update();
+    GlobalExp2.notify();
 
     localStorage.subImage = null;
   });

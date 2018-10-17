@@ -18,11 +18,12 @@ const _ = {
 };
 
 export default function fileInput(index) {
-  const inputBox = document.getElementById(`inputBox${index}`);
-  const exp = document.getElementById(`exp${index}`);
+  const doc = document;
+  const inputBox = doc.getElementById(`inputBox${index}`);
+  const exp = doc.getElementById(`exp${index}`);
   const imgInput = exp.getElementsByTagName('input')[0];
-  const inputHelper = document.getElementById(`inputHelper${index}`);
-  const restoreBtn = document.getElementById(`restore${index}`);
+  const inputHelper = doc.getElementById(`inputHelper${index}`);
+  const restoreBtn = doc.getElementById(`restore${index}`);
   const storage = {
     file: null,
   };
@@ -35,9 +36,11 @@ export default function fileInput(index) {
 
     logger.info('file changed by selecting.');
 
-    _.display(files[0]).hideHelper(inputHelper);
-
     [storage.file] = files;
+
+    _.display(files[0]);
+
+    if (storage.file === null) _.hideHelper(inputHelper);
   });
 
   inputBox.addEventListener('dragover', (e) => {
@@ -53,9 +56,11 @@ export default function fileInput(index) {
 
     logger.info('file changed by dragging.');
 
-    _.display(file).hideHelper(inputHelper);
-
     storage.file = file;
+
+    _.display(file);
+
+    if (storage.file === null) _.hideHelper(inputHelper);
   });
 
   restoreBtn.addEventListener('click', () => {

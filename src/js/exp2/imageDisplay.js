@@ -23,6 +23,8 @@ const imageDAC = {
         this.imgBox.setAttribute('src', objectURL);
 
         GlobalExp2.update();
+
+        GlobalExp2.notify();
       });
   },
 

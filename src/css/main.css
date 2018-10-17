@@ -121,3 +121,18 @@ header p {
 .restore:hover {
   background-color: rgba(255, 160, 160, 0.6);
 }
+
+#colorContainer {
+  width: 100px;
+  height: 100px;
+  border-radius: 50px;
+  overflow: hidden;
+}
+
+#colorTest {
+  width: 100px;
+  height: 100px;
+  margin-left: 50px;
+  padding: 0;
+  border: transparent;
+}

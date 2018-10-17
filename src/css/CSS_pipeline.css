@@ -1,0 +1,65 @@
+.pipeContainer {
+  height: 450px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+.pipeContainer::-webkit-scrollbar {
+  display: none;
+}
+
+.pipeScrollArea {
+  width: 100%;
+}
+
+.pipeComponent{
+  width: 360px;
+  margin: 0 20px 20px 20px;
+  border-radius: 16px;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, .02);
+  box-shadow: 0 6px 4px rgba(0, 0, 0, .06);
+}
+
+.pipeHeader {
+  width: 100%;
+  height: 25px;
+}
+
+.componentType {
+  margin-left: 6%;
+  color: rgba(0, 0, 0, .6);
+  font-size: .8rem;
+}
+
+.pipeContent {
+  width: 100%;
+  height: 100px;
+  background-color: rgba(0, 0, 0, .08);
+}
+
+.pipeFooter {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  height: 40px;
+}
+
+.pipeBtn {
+  width: 60px;
+  height: 28px;
+  margin-right: 6px;
+  border-radius: 14px;
+  font-size: .8rem;
+  color: rgba(0, 0, 0, .7);
+}
+
+.componentsList {
+  display: flex;
+  flex-direction: column;
+}
+
+.componentsList button {
+  margin: 5px;
+}

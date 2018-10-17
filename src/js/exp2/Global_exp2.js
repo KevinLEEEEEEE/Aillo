@@ -69,10 +69,10 @@ const GlobalExp2 = {
     });
 
     logger.info('[G] update Global storage [√]');
+  },
 
+  notify() {
     this.monitorList.map(value => value());
-
-    logger.info('[G] clear all local storage [√]');
   },
 };
 

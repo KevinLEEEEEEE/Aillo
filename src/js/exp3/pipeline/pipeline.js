@@ -7,15 +7,15 @@ const pipelineProp = {
     return Symbol(type);
   },
 
-  getComponent(type, id, parentNode, superior) {
+  getComponent(type, id, parentNode) {
     let component = null;
 
     switch (type) {
     case 'averageFilter':
-      component = averageFilter(id, parentNode, superior);
+      component = averageFilter(id, parentNode);
       break;
     case 'medianFilter':
-      component = medianFilter(id, parentNode, superior);
+      component = medianFilter(id, parentNode);
       break;
     default:
     }
@@ -23,10 +23,12 @@ const pipelineProp = {
     return component;
   },
 
-  addToPipe(id, component) {
+  addToPipe(id, type, component) {
     this.pipelineFlow.push(id);
 
-    this.pipelineLut[id] = component;
+    this.pipelineLut[id] = {
+      component, type, isActive: true, isChanged: false,
+    };
 
     return this;
   },
@@ -39,17 +41,16 @@ const pipelineProp = {
 
       Reflect.deleteProperty(this.pipelineLut, id);
 
-      const nextID = this.pipelineFlow[index];
-      const nextComponent = this.pipelineLut[nextID];
+      if (index > 0) {
+        const targetID = this.pipelineFlow[index - 1]; // change the state of previous component
 
-      nextComponent.forceChange(); // force the component to recalculate after delete
+        this.pipelineLut[targetID].isChanged = true;
+      }
 
       logger.info('remove component from pipeline');
-
-      return true;
     }
 
-    return false;
+    return index;
   },
 
   run(imageData) {
@@ -60,7 +61,15 @@ const pipelineProp = {
     }
 
     const outputData = this.pipelineFlow.reduce((prev, current) => {
-      const component = this.pipelineLut[current];
+      const {
+        component, type, isActive, isChanged, // type is for combination
+      } = this.pipelineLut[current];
+
+      if (isActive === false) {
+        return prev;
+      }
+
+      prev.changed = prev.changed || isChanged;
 
       return component.run(prev);
     }, { imageData, changed: false });
@@ -75,20 +84,33 @@ export default function pipeline(parentNode, deliveryPort) {
   const localStorage = {
     imageData: null,
   };
-  const superior = {
-    remove(id) {
-      return pipe.removeFromPipe(id);
-    },
-
-    run() {
-      if (localStorage.imageData !== null) {
-        deliveryPort.outputData = pipe.run(localStorage.imageData);
-      }
-    },
-  };
 
   pipe.pipelineFlow = [];
   pipe.pipelineLut = {};
+
+  // --------------------------------------------------------------
+
+  parentNode.addEventListener('delete', (e) => {
+    logger.info('receive delete request from children');
+
+    e.stopProgapation(); // limit the event in pipe
+
+    pipe.removeFromPipe(e.detail.id);
+
+    if (localStorage.imageData !== null) {
+      deliveryPort.outputData = pipe.run(localStorage.imageData);
+    }
+  });
+
+  parentNode.addEventListener('run', (e) => {
+    logger.info('receive run request from children');
+
+    e.stopProgapation();
+
+    if (localStorage.imageData !== null) {
+      deliveryPort.outputData = pipe.run(localStorage.imageData);
+    }
+  });
 
   // --------------------------------------------------------------
 
@@ -116,9 +138,9 @@ export default function pipeline(parentNode, deliveryPort) {
     }
 
     const id = pipe.getID(type);
-    const component = pipe.getComponent(type, id, parentNode, superior);
+    const component = pipe.getComponent(type, id, parentNode);
 
-    pipe.addToPipe(id, component);
+    pipe.addToPipe(id, type, component);
 
     if (localStorage.imageData !== null) { // run the precess only when the image exist
       pipe.run(localStorage.imageData);

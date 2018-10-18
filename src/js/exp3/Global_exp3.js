@@ -33,7 +33,7 @@ const GlobalExp3 = {
 
     document.getElementById('addComponent').addEventListener('click', () => {
       this.pipeline.add('averageFilter');
-      this.pipeline.add('medianFilter');
+      // this.pipeline.add('medianFilter');
     });
 
     return this;

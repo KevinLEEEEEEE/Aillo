@@ -1,16 +1,4 @@
-const blankImageData = (() => {
-  const cvs = document.createElement('canvas');
-  const ctx = cvs.getContext('2d');
-
-  return (width = 0, height = 0) => ctx.createImageData(width, height);
-})();
-
-const pos = (index, w) => {
-  const x = index % w;
-  const y = Math.floor(index / w);
-
-  return { x, y };
-};
+import { blankImageData, pos } from './utils';
 
 export default function averageData(imageData, average) {
   const { data, width, height } = imageData;
@@ -38,7 +26,8 @@ export default function averageData(imageData, average) {
 
     const sorted = tmp.sort();
 
-    const finalValue = sorted.length % 2 === 1 ? sorted[(tmp.length - 1) / 2] : sorted[tmp.length / 2];
+    const finalValue = sorted.length % 2 === 1
+      ? sorted[(tmp.length - 1) / 2] : sorted[tmp.length / 2];
 
     blankData.data[i * 4] = finalValue;
     blankData.data[i * 4 + 1] = finalValue;

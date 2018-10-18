@@ -26,6 +26,7 @@
     "Image": true,
     "describe": true,
     "it": true,
-    "alert": true
+    "alert": true,
+    "CustomEvent": true
 	}
 }

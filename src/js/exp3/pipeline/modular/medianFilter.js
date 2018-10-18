@@ -1,4 +1,4 @@
-import template from '../template';
+import template from './template';
 import medianDom from './domCore/medianDom';
 import medianData from './dataCore/medianData';
 import logger from '../../../utils/logger';
@@ -35,8 +35,6 @@ export default function medianFilter(id, parentNode, superior) {
       isChanged = true;
 
       superior.run(); // run after the change of setting
-    } else {
-      medianInput.value = 'x > 1 && x is odd';
     }
   });
 

@@ -27,7 +27,11 @@ const GlobalExp3 = {
       },
     };
 
-    this.pipeline = pipeline(componentArea, this.localStorage);
+    const pipelineCallback = (outputData) => {
+      this.localStorage.outputData = outputData;
+    };
+
+    this.pipeline = pipeline(componentArea, pipelineCallback);
 
     fileInput();
 

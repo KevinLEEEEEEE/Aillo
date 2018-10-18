@@ -78,7 +78,7 @@ const pipelineProp = {
   },
 };
 
-export default function pipeline(parentNode, deliveryPort) {
+export default function pipeline(parentNode, callback) {
   const pipe = Object.create(pipelineProp);
   const that = {};
   const localStorage = {
@@ -93,22 +93,26 @@ export default function pipeline(parentNode, deliveryPort) {
   parentNode.addEventListener('delete', (e) => {
     logger.info('receive delete request from children');
 
-    e.stopProgapation(); // limit the event in pipe
-
     pipe.removeFromPipe(e.detail.id);
 
+    e.stopPropagation();
+
     if (localStorage.imageData !== null) {
-      deliveryPort.outputData = pipe.run(localStorage.imageData);
+      const outputData = pipe.run(localStorage.imageData);
+
+      callback(outputData);
     }
   });
 
   parentNode.addEventListener('run', (e) => {
     logger.info('receive run request from children');
 
-    e.stopProgapation();
+    e.stopPropagation();
 
     if (localStorage.imageData !== null) {
-      deliveryPort.outputData = pipe.run(localStorage.imageData);
+      const outputData = pipe.run(localStorage.imageData);
+
+      callback(outputData);
     }
   });
 
@@ -125,7 +129,9 @@ export default function pipeline(parentNode, deliveryPort) {
 
     localStorage.imageData = imageData;
 
-    deliveryPort.outputData = pipe.run(imageData);
+    const outputData = pipe.run(imageData);
+
+    callback(outputData);
   };
 
   that.add = (type) => {

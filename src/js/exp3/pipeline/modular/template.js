@@ -6,6 +6,12 @@ const nodePool = {
 
   doc: document,
 
+  /**
+   * @param {Node} parent
+   * @param {string} nodeType
+   * @param  {...string} klass
+   * @returns {Node}
+   */
   createAndAppend(parent = null, nodeType = 'div', ...klass) {
     const node = this.doc.createElement(nodeType);
 
@@ -20,6 +26,9 @@ const nodePool = {
     return node;
   },
 
+  /**
+   * @returns {object}
+   */
   generator() {
     const pipeComponent = this.createAndAppend(null, 'div', 'pipeComponent');
 
@@ -39,6 +48,9 @@ const nodePool = {
     };
   },
 
+  /**
+   * @returns {object}
+   */
   getNode() {
     if (this.pool.length === 0) {
       return this.generator();
@@ -47,6 +59,9 @@ const nodePool = {
     return this.pool.pop();
   },
 
+  /**
+   * @param {Node} node
+   */
   returnNode(node) {
     if (this.pool.length < 10) {
       this.pool.push(node);
@@ -54,6 +69,14 @@ const nodePool = {
   },
 };
 
+/**
+ * create a empty node block for components
+ * @param {string} typeName
+ * @param {symbol} id
+ * @param {Node} content
+ * @param {Node} parentNode
+ * @returns {object}
+ */
 export default function template(typeName = 'none', id, content = null, parentNode) {
   const that = {};
   const templateNode = nodePool.getNode();

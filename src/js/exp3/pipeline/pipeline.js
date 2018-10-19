@@ -3,10 +3,20 @@ import medianFilter from './modular/medianFilter';
 import logger from '../../utils/logger';
 
 const pipelineProp = {
+  /**
+   * @param {string} type
+   * @returns {symbol}
+   */
   getID(type) {
     return Symbol(type);
   },
 
+  /**
+   * @param {string} type
+   * @param {symbol} id
+   * @param {Node} parentNode
+   * @returns {object}
+   */
   getComponent(type, id, parentNode) {
     let component = null;
 
@@ -14,16 +24,24 @@ const pipelineProp = {
     case 'averageFilter':
       component = averageFilter(id, parentNode);
       break;
+
     case 'medianFilter':
       component = medianFilter(id, parentNode);
       break;
+
     default:
+      throw new Error(`unknown module: ${type}`);
     }
 
     return component;
   },
 
-  addToPipe(id, type, component) {
+  /**
+   * @param {string} type
+   * @param {symbol} id
+   * @param {Node} parentNode
+   */
+  addToPipe(type, id, component) {
     this.pipelineFlow.push(id);
 
     this.pipelineLut[id] = {
@@ -33,6 +51,10 @@ const pipelineProp = {
     return this;
   },
 
+  /**
+   * @param {symbol} id
+   * @returns {number}
+   */
   removeFromPipe(id) {
     const index = this.pipelineFlow.indexOf(id);
 
@@ -53,6 +75,11 @@ const pipelineProp = {
     return index;
   },
 
+  /**
+   * 运行整个管道
+   * @param {ImageData} imageData
+   * @returns {ImageData}
+   */
   run(imageData) {
     logger.info('pipeline start running');
 
@@ -78,6 +105,11 @@ const pipelineProp = {
   },
 };
 
+/**
+ * @param {Node} parentNode
+ * @param {function} callback
+ * @returns {object}
+ */
 export default function pipeline(parentNode, callback) {
   const pipe = Object.create(pipelineProp);
   const that = {};
@@ -93,9 +125,9 @@ export default function pipeline(parentNode, callback) {
   parentNode.addEventListener('delete', (e) => {
     logger.info('receive delete request from children');
 
-    pipe.removeFromPipe(e.detail.id);
-
     e.stopPropagation();
+
+    pipe.removeFromPipe(e.detail.id);
 
     if (localStorage.imageData !== null) {
       const outputData = pipe.run(localStorage.imageData);
@@ -118,6 +150,9 @@ export default function pipeline(parentNode, callback) {
 
   // --------------------------------------------------------------
 
+  /**
+   * @param {*} imageData
+   */
   that.run = (imageData = null) => {
     if (imageData === null) {
       throw new Error('please run the pipeline with calid input');
@@ -134,6 +169,9 @@ export default function pipeline(parentNode, callback) {
     callback(outputData);
   };
 
+  /**
+   * @param {string} type
+   */
   that.add = (type) => {
     if (type === null) {
       throw new Error('please create a compone t with a valid type');
@@ -146,7 +184,7 @@ export default function pipeline(parentNode, callback) {
     const id = pipe.getID(type);
     const component = pipe.getComponent(type, id, parentNode);
 
-    pipe.addToPipe(id, type, component);
+    pipe.addToPipe(type, id, component);
 
     if (localStorage.imageData !== null) { // run the precess only when the image exist
       pipe.run(localStorage.imageData);

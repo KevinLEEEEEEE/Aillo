@@ -27,6 +27,8 @@
     "describe": true,
     "it": true,
     "alert": true,
-    "CustomEvent": true
+    "CustomEvent": true,
+    "onmessage": true,
+    "postMessage": true
 	}
 }

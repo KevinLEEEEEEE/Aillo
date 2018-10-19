@@ -48,6 +48,8 @@ const pipelineProp = {
       component, type, isActive: true, isChanged: false,
     };
 
+    logger.info(`[P] add component ${type} to pipeline [√]`);
+
     return this;
   },
 
@@ -69,37 +71,43 @@ const pipelineProp = {
         this.pipelineLut[targetID].isChanged = true;
       }
 
-      logger.info('remove component from pipeline');
+      logger.info(`[P] remove the ${index}th component from pipeline [√]`);
     }
 
     return index;
   },
 
   /**
-   * 运行整个管道
+   * 运行整个管道,每个component利用web worker无阻塞，同时跳过被disabled的组件
    * @param {ImageData} imageData
-   * @returns {ImageData}
+   * @returns {Promise}
    */
-  run(imageData) {
-    logger.info('pipeline start running');
+  async run(imageData) {
+    logger.info('[P] pipeline start running [√]');
 
     if (this.pipelineFlow.length === 0) {
+      logger.info('[P] no component yet, skip the process [√]');
+
       return { imageData, changed: true };
     }
 
-    const outputData = this.pipelineFlow.reduce((prev, current) => {
+    const outputData = await this.pipelineFlow.reduce((prev, current, index) => {
       const {
-        component, type, isActive, isChanged, // type is for combination
+        component, type, isActive, isChanged, // type is for operate combination
       } = this.pipelineLut[current];
 
       if (isActive === false) {
         return prev;
       }
 
-      prev.changed = prev.changed || isChanged;
+      return prev.then((value) => {
+        logger.info(`[P] running through the ${index}th component - type: ${type} [√]`);
 
-      return component.run(prev);
-    }, { imageData, changed: false });
+        value.changed = value.changed || isChanged;
+
+        return component.run(value);
+      });
+    }, Promise.resolve({ imageData, changed: false }));
 
     return outputData;
   },
@@ -120,53 +128,57 @@ export default function pipeline(parentNode, callback) {
   pipe.pipelineFlow = [];
   pipe.pipelineLut = {};
 
+  logger.info('[P] init pipeline [√]');
+
   // --------------------------------------------------------------
 
   parentNode.addEventListener('delete', (e) => {
-    logger.info('receive delete request from children');
-
     e.stopPropagation();
 
-    pipe.removeFromPipe(e.detail.id);
+    logger.info('[P] receive remove event from child [√]');
+
+    const { id } = e.detail;
+
+    pipe.removeFromPipe(id);
 
     if (localStorage.imageData !== null) {
-      const outputData = pipe.run(localStorage.imageData);
-
-      callback(outputData);
+      pipe.run(localStorage.imageData).then((data) => {
+        callback(data);
+      });
     }
   });
 
   parentNode.addEventListener('run', (e) => {
-    logger.info('receive run request from children');
-
     e.stopPropagation();
 
-    if (localStorage.imageData !== null) {
-      const outputData = pipe.run(localStorage.imageData);
+    logger.info('[P] receive run event from child [√]');
 
-      callback(outputData);
+    if (localStorage.imageData !== null) {
+      pipe.run(localStorage.imageData).then((data) => {
+        callback(data);
+      });
     }
   });
 
   // --------------------------------------------------------------
 
   /**
-   * @param {*} imageData
+   * @param {ImageData} imageData
    */
   that.run = (imageData = null) => {
     if (imageData === null) {
-      throw new Error('please run the pipeline with calid input');
+      throw new Error('please run the pipeline with input');
     }
 
     if (!(imageData.data instanceof Uint8ClampedArray)) { // imageData must come from canvas
-      throw new Error('the input data must be an Uint8ClampedArray');
+      throw new Error('the input data must be an ImageData');
     }
 
     localStorage.imageData = imageData;
 
-    const outputData = pipe.run(imageData);
-
-    callback(outputData);
+    pipe.run(imageData).then((data) => {
+      callback(data);
+    });
   };
 
   /**
@@ -174,7 +186,7 @@ export default function pipeline(parentNode, callback) {
    */
   that.add = (type) => {
     if (type === null) {
-      throw new Error('please create a compone t with a valid type');
+      throw new Error('please create a component with a valid type');
     }
 
     if (typeof type !== 'string') {
@@ -187,7 +199,9 @@ export default function pipeline(parentNode, callback) {
     pipe.addToPipe(type, id, component);
 
     if (localStorage.imageData !== null) { // run the precess only when the image exist
-      pipe.run(localStorage.imageData);
+      pipe.run(localStorage.imageData).then((data) => {
+        callback(data);
+      });
     }
   };
 

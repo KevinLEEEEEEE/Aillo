@@ -1,53 +1,46 @@
 import template from './template';
 import medianDom from './domCore/medianDom';
-import medianData from './dataCore/medianData';
+import MedianWorker from './dataCore/median.worker';
+import formatImageData from './utils';
 import logger from '../../../utils/logger';
 
-export default function medianFilter(id, parentNode, superior) {
+export default function medianFilter(id, parentNode) {
   const that = {};
   const { frag, medianInput } = medianDom();
-  const dom = template('average', frag);
+  const dom = template('median', id, frag, parentNode);
   let isActive = true;
   let isChanged = false;
   const localStorage = {
     imageData: null,
-    average: 1,
+    median: 1,
   };
 
-  dom.appendToParent(parentNode);
+  // --------------------------------------------------------------
 
-  dom.toggleBtn.addEventListener('click', () => {
+  dom.toggleClickEvent = () => {
     isActive = !isActive;
-
-    superior.run(); // run after state change
-  });
-
-  dom.deleteBtn.addEventListener('click', () => {
-    that.remove();
-  });
+  };
 
   medianInput.addEventListener('change', () => {
     const value = parseInt(medianInput.value, 10);
 
     if (value >= 1 && value % 2 === 1) {
-      localStorage.average = value;
+      localStorage.median = value;
 
       isChanged = true;
 
-      superior.run(); // run after the change of setting
+      dom.dispatchRunEvent(); // run after the change of setting
     }
   });
 
-  logger.info('init medianFilter successfully');
+  // --------------------------------------------------------------
 
-  that.run = ({ imageData, changed }) => {
+  that.run = ({ imageData = null, changed = false } = {}) => {
     if (!(imageData.data instanceof Uint8ClampedArray)) { // imageData must come from canvas
       throw new Error('the data must be instanced from Uint8ClampedArray');
     }
 
-    if (typeof changed !== 'boolean') {
-      throw new Error('the isChanged state must be a boolean');
-    }
+    console.log(imageData);
 
     if (localStorage.imageData === null) { // set default data after created
       logger.info('medianFilter storage init successfully');
@@ -56,39 +49,35 @@ export default function medianFilter(id, parentNode, superior) {
     }
 
     if (!isActive) { // pass through imageData if not actived
-      return { imageData, changed };
+      return Promise.resolve({ imageData, changed });
     }
 
     if (!(changed || isChanged)) { // transmit the former data if not changed ever
-      return { imageData: localStorage.imageData, changed };
+      return Promise.resolve({ imageData: localStorage.imageData, changed });
     }
 
-    const outputData = medianData(imageData, localStorage.average); // changed, then recalculate
+    return new Promise((resolve, reject) => {
+      const worker = new MedianWorker();
 
-    // do sth, remember not to change the original data
+      worker.onmessage = (event) => {
+        const formattedImageData = formatImageData(event.data);
 
-    isChanged = false;
+        isChanged = false;
 
-    localStorage.imageData = outputData;
+        localStorage.imageData = formattedImageData;
 
-    return { imageData: outputData, changed: true }; // update the 'changed' state
+        resolve({ imageData: formattedImageData, changed: true });
+      };
+
+      worker.onerror = (event) => {
+        reject(event);
+      };
+
+      worker.postMessage({ imageData, median: localStorage.median });
+    });
   };
 
-  that.remove = () => {
-    if (superior.remove(id)) { // if successfully removed from pipe, then remove node
-      dom.removeFromParent();
-
-      logger.info('remove medianFilter successfully');
-
-      superior.run();
-    } else {
-      throw new Error('unable to remove component from pipeline');
-    }
-  };
-
-  that.forceChange = () => {
-    isChanged = true;
-  };
+  // --------------------------------------------------------------
 
   return that;
 }

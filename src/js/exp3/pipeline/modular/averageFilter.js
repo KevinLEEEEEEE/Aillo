@@ -1,6 +1,7 @@
 import template from './template';
 import averageDom from './domCore/averageDom';
-import averageData from './dataCore/averageData';
+import AverageWorker from './dataCore/average.worker';
+import formatImageData from './utils';
 import logger from '../../../utils/logger';
 
 export default function averageFilter(id, parentNode) {
@@ -23,7 +24,7 @@ export default function averageFilter(id, parentNode) {
   averageInput.addEventListener('change', () => {
     const value = parseInt(averageInput.value, 10);
 
-    if (value >= 1 && value % 2 === 1) {
+    if (isActive === true && value >= 1 && value % 2 === 1) {
       localStorage.average = value;
 
       isChanged = true;
@@ -39,29 +40,55 @@ export default function averageFilter(id, parentNode) {
       throw new Error('the data must be instanced from Uint8ClampedArray');
     }
 
+    logger.info('average filter component start running');
+
     if (localStorage.imageData === null) { // set default data after created
-      logger.info('averageFilter storage init successfully');
+      logger.info('init storage after the creation of the component');
 
       localStorage.imageData = imageData;
     }
 
     if (!isActive) { // pass through imageData if not actived
-      return { imageData, changed };
+      logger.info('disabled component, skip the process');
+
+      return Promise.resolve({ imageData, changed });
     }
 
     if (!(changed || isChanged)) { // transmit the former data if not changed ever
-      return { imageData: localStorage.imageData, changed };
+      logger.info('no change yet, skip the process');
+
+      return Promise.resolve({ imageData: localStorage.imageData, changed });
     }
 
-    const outputData = averageData(imageData, localStorage.average); // changed, then recalculate
+    if (isChanged === true) {
+      logger.info(`component changed, average: ${localStorage.average}`);
+    } else {
+      logger.info('no change in this component, but previous component has changed');
+    }
 
-    // do sth, remember not to change the original data
+    return new Promise((resolve, reject) => {
+      const worker = new AverageWorker();
 
-    isChanged = false;
+      worker.onmessage = (event) => {
+        const formattedImageData = formatImageData(event.data);
 
-    localStorage.imageData = outputData;
+        isChanged = false;
 
-    return { imageData: outputData, changed: true }; // update the 'changed' state
+        localStorage.imageData = formattedImageData;
+
+        logger.info('average filter web worker finished, update local imageData storage');
+
+        resolve({ imageData: formattedImageData, changed: true });
+      };
+
+      worker.onerror = (event) => {
+        logger.error('average filter web worker error');
+
+        reject(event);
+      };
+
+      worker.postMessage({ imageData, average: localStorage.average });
+    });
   };
 
   // --------------------------------------------------------------

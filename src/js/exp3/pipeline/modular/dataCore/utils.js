@@ -1,10 +1,9 @@
-const blankImageData = (() => {
-  const cvs = document.createElement('canvas');
-  const ctx = cvs.getContext('2d');
 
-  return (width = 0, height = 0) => ctx.createImageData(width, height);
-})();
-
+/**
+ * @param {number} index
+ * @param {number} w
+ * @returns {object}
+ */
 const pos = (index, w) => {
   const x = index % w;
   const y = Math.floor(index / w);
@@ -12,7 +11,19 @@ const pos = (index, w) => {
   return { x, y };
 };
 
+/**
+ * get an ImageData like object
+ * @param {number} width
+ * @param {number} height
+ * @returns {object}
+ */
+const getImageData = (width, height) => ({
+  data: new Uint8ClampedArray(width * height * 4),
+  width,
+  height,
+});
+
 export {
-  blankImageData,
+  getImageData,
   pos,
 };

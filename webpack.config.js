@@ -27,6 +27,7 @@ module.exports = {
   output: {
     filename: 'assets/js/[name].bundle.js',
     path: path.resolve(__dirname, 'dist'),
+    globalObject: 'this',
   },
   module: {
     rules: [

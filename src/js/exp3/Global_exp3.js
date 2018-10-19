@@ -23,7 +23,13 @@ const GlobalExp3 = {
 
         if (changed !== false) {
           GlobalExp3.updateDisplay(imageData);
+
+          logger.info('[G] receive data from pipeline, update display [√]');
+        } else {
+          logger.info('[G] receive data, but no need to update display [√]');
         }
+
+        logger.info('');
       },
     };
 
@@ -37,7 +43,6 @@ const GlobalExp3 = {
 
     document.getElementById('addComponent').addEventListener('click', () => {
       this.pipeline.add('averageFilter');
-      // this.pipeline.add('medianFilter');
     });
 
     return this;

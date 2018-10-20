@@ -2,6 +2,7 @@
 
 ### assignment for digital image process
 
+![image](https://github.com/KevinLEEEEEEE/Aillo/blob/master/src/image/pipeline.jpg)
 
 ### 使用说明  
 

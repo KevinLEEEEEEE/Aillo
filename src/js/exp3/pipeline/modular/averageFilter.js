@@ -12,7 +12,7 @@ export default function averageFilter(id, parentNode) {
   let isChanged = false;
   const localStorage = {
     imageData: null,
-    average: 1,
+    average: 0,
   };
 
   // --------------------------------------------------------------
@@ -35,7 +35,25 @@ export default function averageFilter(id, parentNode) {
 
   // --------------------------------------------------------------
 
-  that.run = ({ imageData = null, changed = false } = {}) => {
+  /**
+   * @returns {Promise} - the params of previous component
+   */
+  that.getParamsPackage = () => ({
+    average: localStorage.average,
+  });
+
+  that.getStates = () => ({
+    isActive,
+    isChanged,
+  });
+
+  /**
+   * @param {ImageData} imageData
+   * @param {Boolean} changed
+   * @param {Object} paramsPackage
+   * @returns {Promise}
+   */
+  that.run = ({ imageData = null, changed = false, paramsPackage = null }) => {
     if (!(imageData.data instanceof Uint8ClampedArray)) { // imageData must come from canvas
       throw new Error('the data must be instanced from Uint8ClampedArray');
     }
@@ -87,7 +105,17 @@ export default function averageFilter(id, parentNode) {
         reject(event);
       };
 
-      worker.postMessage({ imageData, average: localStorage.average });
+      let { average } = localStorage; // need to be improved
+
+      if (paramsPackage !== null) {
+        average += paramsPackage.average;
+
+        average = average % 2 === 1 ? average : average + 1;
+      }
+
+      logger.info(`run with params - average: ${average}`);
+
+      worker.postMessage({ imageData, average });
     });
   };
 

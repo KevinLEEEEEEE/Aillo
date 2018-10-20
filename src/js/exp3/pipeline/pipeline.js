@@ -2,20 +2,22 @@ import averageFilter from './modular/averageFilter';
 import medianFilter from './modular/medianFilter';
 import logger from '../../utils/logger';
 
+const COMBINELIST = ['averageFilter'];
+
 const pipelineProp = {
   /**
-   * @param {string} type
-   * @returns {symbol}
+   * @param {String} type
+   * @returns {Symbol}
    */
   getID(type) {
     return Symbol(type);
   },
 
   /**
-   * @param {string} type
-   * @param {symbol} id
+   * @param {String} type
+   * @param {Symbol} id
    * @param {Node} parentNode
-   * @returns {object}
+   * @returns {Object}
    */
   getComponent(type, id, parentNode) {
     let component = null;
@@ -37,8 +39,8 @@ const pipelineProp = {
   },
 
   /**
-   * @param {string} type
-   * @param {symbol} id
+   * @param {String} type
+   * @param {Symbol} id
    * @param {Node} parentNode
    */
   addToPipe(type, id, component) {
@@ -54,8 +56,8 @@ const pipelineProp = {
   },
 
   /**
-   * @param {symbol} id
-   * @returns {number}
+   * @param {Symbol} id
+   * @returns {Number}
    */
   removeFromPipe(id) {
     const index = this.pipelineFlow.indexOf(id);
@@ -68,13 +70,65 @@ const pipelineProp = {
       if (index > 0) {
         const targetID = this.pipelineFlow[index - 1]; // change the state of previous component
 
-        this.pipelineLut[targetID].isChanged = true;
+        this.forceChange(targetID);
+      } if (index === 0 && this.pipelineFlow.length > 0) {
+        const targetID = this.pipelineFlow[index];
+
+        this.forceChange(targetID);
       }
 
       logger.info(`[P] remove the ${index}th component from pipeline [√]`);
     }
 
     return index;
+  },
+
+  /**
+   * @param {Symbol} id
+   */
+  forceChange(id) {
+    if (Reflect.has(this.pipelineLut, id)) {
+      this.pipelineLut[id].isChanged = true;
+    }
+  },
+
+  /**
+   * @param {Number} index
+   * @param {String} currentType
+   * @returns {Boolean}
+   */
+  canCombine(index, currentType) {
+    if (COMBINELIST.indexOf(currentType) !== -1 && index < this.pipelineFlow.length - 1) {
+      const nextID = this.pipelineFlow[index + 1];
+      const nextType = this.pipelineLut[nextID].type;
+
+      if (currentType === nextType) {
+        this.forceChange(nextID);
+
+        return true;
+      }
+    }
+
+    return false;
+  },
+
+  /**
+   * @param {Number} current
+   * @param {Number} total
+   */
+  updateProgress(current, total) {
+    if (current === 0) {
+      this.progress.classList.remove('hide');
+    }
+
+    const progress = ((current + 1) / total) * 100;
+    this.progressContent.innerHTML = `${progress.toFixed(1)}%`;
+
+    logger.info(`[P] update progress ${progress}% [√]`);
+
+    // if (current + 1 === total) {
+    //   this.progress.classList.add('hide');
+    // }
   },
 
   /**
@@ -85,7 +139,9 @@ const pipelineProp = {
   async run(imageData) {
     logger.info('[P] pipeline start running [√]');
 
-    if (this.pipelineFlow.length === 0) {
+    const { length } = this.pipelineFlow;
+
+    if (length === 0) {
       logger.info('[P] no component yet, skip the process [√]');
 
       return { imageData, changed: true };
@@ -97,16 +153,42 @@ const pipelineProp = {
       } = this.pipelineLut[current];
 
       if (isActive === false) {
-        return prev;
+        return Promise.resolve(prev);
       }
 
       return prev.then((value) => {
         logger.info(`[P] running through the ${index}th component - type: ${type} [√]`);
 
+        this.updateProgress(index, length);
+
         value.changed = value.changed || isChanged;
+        this.pipelineLut[current].isChanged = false; // reset the state after combined
+
+        if (this.canCombine(index, type)) {
+          const paramsPackage = component.getParamsPackage();
+          const states = component.getStates();
+
+          logger.info('[P] component can be combined [√]');
+
+          if (states.isActive === true) {
+            value.paramsPackage = paramsPackage;
+
+            value.changed = value.changed || states.isChanged;
+
+            return Promise.resolve(value);
+          }
+        }
 
         return component.run(value);
-      });
+      }, (err) => {
+        logger.error(err);
+
+        return Promise.resolve(prev);
+      })
+        .catch((err) => {
+          logger.error(err);
+        })
+        .finally(() => Promise.resolve(prev));
     }, Promise.resolve({ imageData, changed: false }));
 
     return outputData;
@@ -115,8 +197,8 @@ const pipelineProp = {
 
 /**
  * @param {Node} parentNode
- * @param {function} callback
- * @returns {object}
+ * @param {Function} callback
+ * @returns {Object}
  */
 export default function pipeline(parentNode, callback) {
   const pipe = Object.create(pipelineProp);
@@ -127,6 +209,9 @@ export default function pipeline(parentNode, callback) {
 
   pipe.pipelineFlow = [];
   pipe.pipelineLut = {};
+
+  pipe.progress = document.getElementById('pipeProgress');
+  pipe.progressContent = document.getElementById('pipeProgressContent');
 
   logger.info('[P] init pipeline [√]');
 
@@ -182,7 +267,7 @@ export default function pipeline(parentNode, callback) {
   };
 
   /**
-   * @param {string} type
+   * @param {String} type
    */
   that.add = (type) => {
     if (type === null) {

@@ -9,7 +9,7 @@
 }
 
 .pipeScrollArea {
-  /* width: 100%; */
+  position: relative;
   width: 400px;
 }
 
@@ -63,4 +63,25 @@
 
 .componentsList button {
   margin: 5px;
+}
+
+.pipeProgress {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, .7);
+}
+
+.pipeProgressContent {
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, .5);
+}
+
+.hide {
+  visibility: hidden;
 }

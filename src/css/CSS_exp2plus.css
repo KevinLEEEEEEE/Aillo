@@ -9,3 +9,9 @@
 #titleExp2plus img {
   width: 870px;
 }
+
+#imgBox3 {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}

@@ -13,9 +13,8 @@
       <p>⊱ Digital Image Processing Assignment ⊰</p>
     </header>
 
-    <div id="exp4" class="exp">
+    <!-- <div id="exp4" class="exp">
       <div id="titleExp4" class="title">
-        <!-- <img src="./src//image//filter&noise.jpg" alt="filter&noise"> -->
       </div>
       <div class="expBox">
         <div class="fileBox">
@@ -37,18 +36,6 @@
             <div class="pipeProgress hide" id="pipeProgress">
                 <p class="pipeProgressContent" id="pipeProgressContent">0%</p>
             </div>
-            <!-- <div class="pipeComponent">
-                <div class="pipeHeader">
-                  <span class="componentType">none</span>
-                </div>
-                <div class="pipeContent">
-    
-                </div>
-                <div class="pipeFooter">
-                  <button class="pipeBtn">toggle</button>
-                  <button class="pipeBtn">delete</button>
-                </div>
-            </div> -->
           </div>
         </div>
         <div class="componentsList">
@@ -57,7 +44,7 @@
           <button id="restore4" class="restore">Restore</button>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <div id="exp3" class="exp">
       <div class="title" id="titleExp2plus">
@@ -109,6 +96,14 @@
             <p class="annotation">* 效果的添加将叠加，而非始终对原图操作 *</p>
           </div>
           <div class="options">
+            <span>Roberts：</span>
+            <input type="text" id="robertsInput" class="numberInput" placeholder="0">
+            <button id="roberts">roberts</button>
+            <button id="laplacian">laplacian</button>
+            <button id="iterativeThresholding">iterativeThresholding</button>
+            <button id="regionGrowing">regionGrowing</button>
+          </div>
+          <div class="options">
             <button id="restore3" class="restore">Restore</button>
           </div>
         </div>
@@ -139,7 +134,7 @@
               <span>px</span>
               <button id="reStep">reset steps</button>
               <button id="trans">transform</button>
-              <button id="equalization">equalize</button>
+              <button id="equalization">Shannon-Fano</button>
               <p class="annotation">* 均衡化是一个不可逆操作，其结果将会叠加现有的线性/非线性调整 *</p>
             </div>
             <div class="options">

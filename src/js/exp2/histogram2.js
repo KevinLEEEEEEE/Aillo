@@ -85,6 +85,131 @@ const _ = {
   },
 };
 
+const calculateProbability = (array) => {
+  const total = array.reduce((prev, current) => prev + current, 0);
+
+  return array.map(value => value / total);
+};
+
+const calcReversedLut = (array) => {
+  const rLut = [];
+
+  array.forEach((value, index) => {
+    if (!Reflect.has(rLut, value)) {
+      rLut[value] = [];
+    }
+
+    rLut[value].push(index);
+  });
+
+  return rLut;
+};
+
+const calcTotal = array => array.reduce((prev, current) => {
+  if (current !== null) {
+    return prev + current;
+  }
+  return prev;
+}, 0);
+
+const haffmanSplitation = (array) => {
+  const total = calcTotal(array);
+  let curTotal = 0;
+  let curDis = total;
+  let splitIndex = -1;
+
+  // console.log(`halfTotal: ${total}`);
+
+  for (let i = 0; i < array.length; i += 1) {
+    if (array[i] !== null) {
+      curTotal += array[i];
+      const curLeft = total - curTotal;
+
+      const addDis = Math.abs(curTotal - curLeft);
+
+      if (addDis < curDis) {
+        curDis = addDis;
+
+        splitIndex = i;
+      }
+    }
+  }
+
+  // console.log(`splitIndex: ${splitIndex}`);
+
+  return splitIndex;
+};
+
+const haffmanCalc = (array, prevNum, haffmans) => {
+  const indexs = [];
+
+  array.forEach((number, index) => {
+    if (number !== null && number !== undefined) {
+      indexs.push(index);
+    }
+  });
+
+  if (indexs.length === 0) {
+    return;
+  }
+
+  if (indexs.length === 1) {
+    haffmans[indexs[0]] = prevNum;
+
+    return;
+  }
+
+  if (indexs.length === 2) {
+    haffmans[indexs[0]] = `${prevNum}1`;
+    haffmans[indexs[1]] = `${prevNum}0`;
+
+    return;
+  }
+
+  const i = haffmanSplitation(array);
+  const small = [];
+  const large = [];
+
+  for (let is = 0; is <= i; is += 1) {
+    small[is] = array[is] ? array[is] : null;
+    large[is] = null;
+  }
+
+  for (let is = i + 1; is < array.length; is += 1) {
+    large[is] = array[is];
+  }
+
+  // console.log(small, large, array);
+
+  haffmanCalc(small, `${prevNum}1`, haffmans);
+  haffmanCalc(large, `${prevNum}0`, haffmans);
+};
+
+const haffman = (array) => {
+  const haffmans = {};
+
+  console.log('');
+  console.log('原始数组：');
+
+  array.forEach((number, index) => {
+    if (number !== null && number !== undefined) {
+      console.log(`色阶： ${index}   拥有像素点： ${number} 个`);
+    }
+  });
+
+  console.log('');
+
+  haffmanCalc(array, '', haffmans);
+
+  console.log('计算后数组：');
+
+  Object.keys(haffmans).forEach((key) => {
+    console.log(`色阶： ${key}   的编码为： ${haffmans[key]}`);
+  });
+
+  console.log('');
+};
+
 export default function histogram() {
   const equalizationBtn = document.getElementById('equalization');
   const reStepBtn = document.getElementById('reStep');
@@ -124,17 +249,19 @@ export default function histogram() {
     }
 
     const lut = myHistogram.equalize(storage.data.length);
-    const imageData = myHistogram.mapEqualize(storage.data, lut);
+    // const imageData = myHistogram.mapEqualize(storage.data, lut);
 
-    storage = {
-      data: imageData,
-      width: storage.width,
-      height: storage.height,
-    };
+    haffman(lut);
 
-    _.resetController(isCurve)
-      .updateHistogram(storage.data, isCurve)
-      .updateImage();
+    // storage = {
+    //   data: imageData,
+    //   width: storage.width,
+    //   height: storage.height,
+    // };
+
+    // _.resetController(isCurve)
+    //   .updateHistogram(storage.data, isCurve)
+    //   .updateImage();
   });
 
   reStepBtn.addEventListener('click', () => {

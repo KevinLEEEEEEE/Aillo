@@ -40,7 +40,7 @@ export default function fileInput(index) {
 
     _.display(files[0]);
 
-    if (storage.file === null) _.hideHelper(inputHelper);
+    _.hideHelper(inputHelper);
   });
 
   inputBox.addEventListener('dragover', (e) => {

@@ -1,6 +1,7 @@
 import fileInput from './fileInput';
 import filter from './filter';
 import noise from './noise';
+import edge from './edge';
 
 import imageManager from './api/imageManager';
 import canvasManager from './api/canvasManager';
@@ -51,8 +52,9 @@ const GlobalExp2plus = {
     const m1 = fileInput(index);
     const m2 = filter();
     const m3 = noise(index);
+    const m4 = edge();
 
-    this.monitorList = [m1, m2, m3];
+    this.monitorList = [m1, m2, m3, m4];
     this.imgBox = canvasManager(imgBox);
 
     logger.info('[G] init all events listener [√]');

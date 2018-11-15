@@ -203,6 +203,15 @@ const edgeManager = {
 
     return blankData;
   },
+
+  runRegionGrowingOnPoint(x, y, k, ratio, imageData) {
+    const xPos = Math.floor(x / ratio);
+    const yPos = Math.floor(y / ratio);
+
+    console.log(xPos, yPos);
+
+    return this.regionGrowing(imageData, [xPos, yPos], k);
+  },
 };
 
 export default function edge() {
@@ -224,6 +233,15 @@ export default function edge() {
     storage = { imageData: data.decolorized };
 
     logger.info('filter local storage update [√]');
+  };
+
+  const calcScaleRatio = () => {
+    const { width, height } = storage.imageData;
+
+    if (width > height) {
+      return containerRect.width / width;
+    }
+    return containerRect.height / height;
   };
 
   robertsBtn.addEventListener('click', () => {
@@ -261,7 +279,14 @@ export default function edge() {
   imgInput.addEventListener('click', (e) => {
     const { ctrlKey, layerX, layerY } = e;
     if (ctrlKey === true) {
-      console.log(xDis, yDis);
+      const ratio = calcScaleRatio();
+      const x = layerX - xDis;
+      const y = layerY - yDis;
+      const imageData = edgeManager.runRegionGrowingOnPoint(x, y, 20, ratio, storage.imageData);
+
+      console.log(imageData);
+
+      GlobalExp2plus.setImageData(imageData, imageData);
     }
   });
 

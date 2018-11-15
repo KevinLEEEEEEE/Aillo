@@ -172,12 +172,9 @@ const edgeManager = {
       point4.forEach(([ttx, tty]) => {
         const index = (tty * width + ttx) * SIZE_OF_RGB;
 
-        if (blankData[index + 3] !== undefined || blankData[index + 3] !== 0) {
-          console.log(blankData[index + 3]);
+        if (blankData.data[index + 3] !== 0) {
           return;
         }
-
-        console.log('run');
 
         const value = data[index];
 
@@ -195,13 +192,11 @@ const edgeManager = {
         tmpValue += data[(tty * width + ttx) * SIZE_OF_RGB];
       });
 
-      currentValue = (currentValue + tmpValue) / (point4.length + 1);
+      currentValue = (currentValue + tmpValue) / (range4.length + 1);
 
       range4.forEach(([ttx, tty]) => {
         calc(ttx, tty);
       });
-
-      // console.log(range4, currentValue);
     };
 
     calc(x, y);
@@ -216,6 +211,13 @@ export default function edge() {
   const laplacianBtn = document.getElementById('laplacian');
   const iterativeThresholdingBtn = document.getElementById('iterativeThresholding');
   const regionGrowingBtn = document.getElementById('regionGrowing');
+  const imgInput = document.getElementById('inputBox3');
+  const imgContainer = document.getElementById('imgContainer3');
+
+  const containerRect = imgContainer.getBoundingClientRect();
+  const inputRect = imgInput.getBoundingClientRect();
+  const xDis = containerRect.left - inputRect.left;
+  const yDis = containerRect.top - inputRect.top;
   let storage = null;
 
   const update = (data) => {
@@ -249,11 +251,18 @@ export default function edge() {
   });
 
   regionGrowingBtn.addEventListener('click', () => {
-    const regionGrowingData = edgeManager.regionGrowing(storage.imageData, [2, 2], 2);
+    const regionGrowingData = edgeManager.regionGrowing(storage.imageData, [4, 1], 50);
 
     console.log(regionGrowingData);
 
     GlobalExp2plus.setImageData(regionGrowingData, regionGrowingData);
+  });
+
+  imgInput.addEventListener('click', (e) => {
+    const { ctrlKey, layerX, layerY } = e;
+    if (ctrlKey === true) {
+      console.log(xDis, yDis);
+    }
   });
 
   return update;

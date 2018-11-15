@@ -122,6 +122,12 @@ header p {
   background-color: rgba(255, 160, 160, 0.6);
 }
 
+.imgBox {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
 #colorContainer {
   width: 100px;
   height: 100px;

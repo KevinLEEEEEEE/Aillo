@@ -208,6 +208,8 @@ const haffman = (array) => {
   });
 
   console.log('');
+
+  alert('按下F12 查看编码前后的信息');
 };
 
 export default function histogram() {

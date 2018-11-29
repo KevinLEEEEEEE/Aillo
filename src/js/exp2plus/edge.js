@@ -269,11 +269,13 @@ export default function edge() {
   });
 
   regionGrowingBtn.addEventListener('click', () => {
-    const regionGrowingData = edgeManager.regionGrowing(storage.imageData, [4, 1], 50);
+    // const regionGrowingData = edgeManager.regionGrowing(storage.imageData, [4, 1], 50);
 
-    console.log(regionGrowingData);
+    // console.log(regionGrowingData);
 
-    GlobalExp2plus.setImageData(regionGrowingData, regionGrowingData);
+    // GlobalExp2plus.setImageData(regionGrowingData, regionGrowingData);
+
+    alert('按住 Ctrl 同时左键点击图片选择生长点');
   });
 
   imgInput.addEventListener('click', (e) => {

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>starts</title>
+  </head>
+  <body>
+    
+    <header>
+      <h1>数 字 图 像 处 理</h1>
+      <p>⊱ Digital Image Processing Assignment ⊰</p>
+    </header>
+
+    <!-- <div id="exp4" class="exp">
+      <div id="titleExp4" class="title">
+      </div>
+      <div class="expBox">
+        <div class="fileBox">
+          <label id="inputBox4" class="inputBox">
+            <input type="file" id="imgInput4">
+          </label>
+          <div id="helper4" class="inputHelper">
+              <p>+</p>
+              <p>点击或拖动文件至此</p>
+          </div>
+          <div id="imgContainer4" class="imgContainer">
+            <canvas id="imgBox4" class="imgBox">
+              Your broswer cannot support canvas!
+            </canvas>
+          </div>
+        </div>
+        <div class="pipeContainer">
+          <div class="pipeScrollArea" id="pipeScrollArea">
+            <div class="pipeProgress hide" id="pipeProgress">
+                <p class="pipeProgressContent" id="pipeProgressContent">0%</p>
+            </div>
+          </div>
+        </div>
+        <div class="componentsList">
+          <button id="addComponent">addComponent</button>
+          <button id="activePipeline">activePipeline</button>
+          <button id="restore4" class="restore">Restore</button>
+        </div>
+      </div>
+    </div> -->
+
+    <div id="exp3" class="exp">
+      <div class="title" id="titleExp2plus">
+        <img src="assets/img/filter&noise-0ae894.jpg" alt="filter&noise">
+      </div>
+      <div class="expBox">
+        <div class="fileBox">
+          <label id="inputBox3" class="inputBox">
+            <input type="file">
+          </label>
+          <div id="inputHelper3" class="inputHelper">
+              <p>+</p>
+              <p>点击或拖动文件至此</p>
+          </div>
+          <div id="imgContainer3" class="imgContainer">
+            <canvas id="imgBox3" class="imgBox">
+              Your broswer cannot support canvas!
+            </canvas>
+          </div>
+        </div>
+        <div>
+          <div class="options">
+            <span>Template：</span>
+            <input type="text" id="averageTemp" class="numberInput" placeholder="3">
+            <span>px</span>
+            <button id="average">average</button>
+          </div>
+          <div class="options">
+            <span>Template：</span>
+            <input type="text" id="medianTemp" class="numberInput" placeholder="3">
+            <span>px</span>
+            <button id="median">median</button>
+            <p class="annotation">* 模板大小请输入奇数，偶数将-1，负数将取绝对值 *</p>
+          </div>
+          <div class="options">
+            <span>SNR：</span>
+            <input type="text" id="snr" class="numberInput" placeholder="0.9" min="0" max="1">
+            <button id="peppersalt">peppersalt</button>
+          </div>
+          <div class="options">
+            <span>Mu：</span>
+            <input type="text" id="mu" class="numberInput" placeholder="0">
+            <span>Sigma：</span>
+            <input type="text" id="sigma" class="numberInput" placeholder="1">
+            <span>K：</span>
+            <input type="text" id="k" class="numberInput" placeholder="128">
+            <button id="gaussian">gaussian</button>
+            <p class="annotation">* 可以调整椒盐和高斯噪声的系数 *</p>
+            <p class="annotation">* 效果的添加将叠加，而非始终对原图操作 *</p>
+          </div>
+          <div class="options">
+            <span>Roberts：</span>
+            <input type="text" id="robertsInput" class="numberInput" placeholder="0">
+            <button id="roberts">roberts</button>
+            <button id="laplacian">laplacian</button>
+            <button id="iterativeThresholding">iterativeThresholding</button>
+            <button id="regionGrowing">regionGrowing</button>
+          </div>
+          <div class="options">
+            <button id="restore3" class="restore">Restore</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="exp2" class="exp">
+        <div class="title" id="titleExp2">
+          <img src="assets/img/histogram-1ded8d.jpg" alt="histogram">
+        </div>
+        <div class="expBox">
+          <div class="fileBox">
+            <label id="inputBox2" class="inputBox"><input type="file"></label>
+            <div id="inputHelper2" class="inputHelper">
+                <p>+</p>
+                <p>点击或拖动文件至此</p>
+            </div>
+            <div id="imgContainer2" class="imgContainer"><img id="imgBox2"></div>
+          </div>
+          <div>
+            <div id="canvasContainer">
+              <canvas id="histogramCanvas"></canvas>
+              <canvas id="curveCanvas"></canvas>
+            </div>
+            <div class="options">
+              <span>step：</span>
+              <input type="text" id="step" placeholder="256">
+              <span>px</span>
+              <button id="reStep">reset steps</button>
+              <button id="trans">transform</button>
+              <button id="equalization">Shannon-Fano</button>
+              <p class="annotation">* 均衡化是一个不可逆操作，其结果将会叠加现有的线性/非线性调整 *</p>
+            </div>
+            <div class="options">
+              <div class="imageFusion">
+                <input type="file" id="addImage">
+                <button id="add">add image</button>                
+              </div>
+              <div class="imageFusion">
+                <input type="file" id="subImage">
+                <button id="sub">sub image</button>                
+              </div>
+              <p class="annotation">* 请选择文件用于图像融合和分离，图像将被拉伸以适配原文件大小 *</p>
+            </div>
+          </div>
+      </div>
+    </div>
+
+    <div id="exp1" class="exp">
+      <div class="title">
+        <img src="assets/img/fourier-530fea.jpg" alt="fourier">
+      </div>
+      <div class="expBox">
+        <div class="fileBox">
+            <label id="inputBox" class="inputBox"><input type="file"></label>
+            <div id="inputHelper" class="inputHelper">
+                <p>+</p>
+                <p>点击或拖动文件至此</p>
+            </div>
+            <div id="imgContainer" class="imgContainer"><img id="imgBox"></div>
+        </div> 
+        <div class="downloadBox">
+          <div class="rename options">
+            <span>名称：</span>
+            <input type="text" name="rename" id="rename">
+          </div>
+          <div class="formatSelection options">
+            <span>格式选择：</span>
+            <select id="formatSelection">
+              <option value="none">none</option>
+              <option value="jpeg">jpeg</option>
+              <option value="png">png</option>
+              <option value="bmp">bmp</option>
+            </select>
+            <p class="annotation">* 不同浏览器下bitmap的下载格式可能不同，例如.bmp或.dib *</p>
+          </div>
+          <div class="options">
+            <span>傅里叶：</span>
+            <button id="fft">Fast Fourier Transform</button>
+            <button id="ifft">Fast Fourier Inversion</button>
+            <p class="annotation">* 此为阻塞运算，浏览器将短时间内无响应 *</p>
+          </div>
+          <div class="options">
+            <span>离散余弦：</span>
+            <button id="dct">Discrete Cosine Transform</button>
+            <button id="idct">Discrete Cosine Inversion</button>
+            <p class="annotation">* 结果已量化，采用缩放值：2 以增强效果，分块大小8px *</p>
+          </div>
+          <div class="options">
+            <span>沃尔什-哈达玛：</span>
+            <button id="wht">Walah Hadamard Transform</button>
+            <button id="iwht">Walah Hadamard Inversion</button>
+          </div>
+          <div class="options">
+              <span>沃尔什-哈达玛缩放：</span>
+              <button id="whtNarrow" class="roundBtn">-</button>
+              <button id="whtEnlarge" class="roundBtn">+</button>
+              <span class="annotation">current scale : </span>
+              <span class="annotation" id="whtScale">255</span>
+            </div>
+          <a id="download" class="options disable" download="#" href="#">download</a>              
+        </div>
+      </div>
+    </div>
+
+  <script type="text/javascript" src="assets/js/app.bundle.js"></script></body>
+</html>
